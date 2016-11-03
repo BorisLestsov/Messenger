@@ -2,9 +2,17 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/include/Message.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/include/configs.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/Client.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/Server.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/lib/Message.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/client/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/client/Client.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/server/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/server/Server.cpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

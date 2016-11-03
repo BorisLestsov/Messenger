@@ -7,9 +7,10 @@ using std::cout;
 using std::endl;
 
 int main() {
-    Message msg("main!");
+    Message msg("Server!");
 
     cout << msg << endl;
 
     return 0;
 }
+
