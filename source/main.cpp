@@ -7,7 +7,7 @@ using std::cout;
 using std::endl;
 
 int main() {
-    Message msg("main!");
+    Message msg("main message!");
 
     cout << msg << endl;
 
