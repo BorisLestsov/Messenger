@@ -11,6 +11,11 @@ Server::Server(boost::asio::io_service& io_service, const tcp::endpoint& endpoin
     do_accept();
 }
 
+size_t Server::n_opened() const
+{
+	return room_.size();
+}
+
 void Server::do_accept()
 {
     acceptor_.async_accept(socket_, [this](boost::system::error_code ec) {

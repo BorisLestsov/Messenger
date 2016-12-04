@@ -28,5 +28,10 @@ void chat_room::deliver(const chat_message& msg)
 		participant->deliver(msg);
 }
 
+size_t chat_room::size() const
+{
+	return participants_.size();
+}
+
 } // namespace meow
 

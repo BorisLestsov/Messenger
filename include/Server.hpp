@@ -18,6 +18,8 @@ class chat_room;
 class Server {
 public:
     Server(boost::asio::io_service& io_service, const tcp::endpoint& endpoint);
+    
+    size_t n_opened() const;  // number of clients
 private:
     void do_accept();
 

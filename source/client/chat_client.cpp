@@ -11,6 +11,7 @@
 
 using boost::asio::ip::tcp;
 using namespace meow;
+using namespace std;
 
 
 int main(int argc, char* argv[])
@@ -36,6 +37,8 @@ int main(int argc, char* argv[])
 	});
 
     char line[chat_message::max_body_length + 1];
+    
+    cout << "Please, type messages:" << endl;
     while (std::cin.getline(line, chat_message::max_body_length + 1))
     {
       chat_message msg;
