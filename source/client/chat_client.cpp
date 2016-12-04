@@ -13,6 +13,7 @@
 #include <iostream>
 #include <thread>
 #include <boost/asio.hpp>
+
 #include "chat_message.hpp"
 
 using boost::asio::ip::tcp;
@@ -136,6 +137,7 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: chat_client <host> <port>\n";
       return 1;
     }
+    
 
     boost::asio::io_service io_service;
 

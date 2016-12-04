@@ -88,4 +88,6 @@ private:
   std::size_t body_length_;
 };
 
+typedef std::deque<chat_message> chat_message_queue;
+
 #endif // CHAT_MESSAGE_HPP
