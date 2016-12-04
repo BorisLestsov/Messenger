@@ -2,21 +2,12 @@
 #ifndef _CHAT_ROOM_HPP_INCLUDED
 #define _CHAT_ROOM_HPP_INCLUDED
 
-#include <cstdlib>
-#include <deque>
-#include <iostream>
-#include <list>
-#include <memory>
 #include <set>
-#include <utility>
-#include <boost/asio.hpp>
 
 #include "chat_participant.hpp"
 #include "chat_message.hpp"
 
 namespace meow {
-
-using boost::asio::ip::tcp;
 
 class chat_room
 {

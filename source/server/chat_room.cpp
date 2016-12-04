@@ -1,20 +1,10 @@
-#include <cstdlib>
-#include <deque>
-#include <iostream>
-#include <list>
-#include <memory>
 #include <set>
-#include <utility>
-#include <boost/asio.hpp>
 
 #include "chat_participant.hpp"
-#include "chat_session.hpp"
 #include "chat_message.hpp"
 #include "chat_room.hpp"
 
 namespace meow {
-
-using boost::asio::ip::tcp;
 
 void chat_room::join(chat_participant_ptr participant)
 {
