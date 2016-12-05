@@ -7,20 +7,20 @@
 #include <thread>
 #include <boost/asio.hpp>
 
-#include "chat_message.hpp"
+#include "Message.hpp"
 
 namespace meow {
 
 using boost::asio::ip::tcp;
 
-typedef std::deque<chat_message> chat_message_queue;
+typedef std::deque<Message> chat_message_queue;
 
 class Client {
 public:
   Client(boost::asio::io_service& io_service,
       tcp::resolver::iterator endpoint_iterator);
 
-  void write(const chat_message& msg);
+  void write(const Message& msg);
   void close();
 
 private:
@@ -32,7 +32,7 @@ private:
 private:
   boost::asio::io_service& io_service_;
   tcp::socket socket_;
-  chat_message read_msg_;
+  Message read_msg_;
   chat_message_queue write_msgs_;
 };
 

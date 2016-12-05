@@ -1,9 +1,10 @@
-#include "chat_participant.hpp"
+#include "Participant.hpp"
 
 namespace meow {
 
-ChatParticipant::~ChatParticipant()
-{
+ChatParticipant::~ChatParticipant(){
+
+
 }
 
 } // namespace meow

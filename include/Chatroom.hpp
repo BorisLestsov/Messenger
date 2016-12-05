@@ -4,17 +4,17 @@
 
 #include <set>
 
-#include "chat_participant.hpp"
-#include "chat_message.hpp"
+#include "Participant.hpp"
+#include "Message.hpp"
 
 namespace meow {
 
-class chat_room
+class Chatroom
 {
 public:
 	void join(chat_participant_ptr participant);
 	void leave(chat_participant_ptr participant);
-	void deliver(const chat_message& msg);
+	void deliver(const Message& msg);
 	size_t size() const;
 private:
 	std::set<chat_participant_ptr> participants_;

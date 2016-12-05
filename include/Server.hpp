@@ -4,16 +4,16 @@
 
 #include <boost/asio.hpp>
 
-#include "chat_participant.hpp"
-#include "chat_session.hpp"
-#include "chat_room.hpp"
-#include "chat_message.hpp"
+#include "Participant.hpp"
+#include "Session.hpp"
+#include "Chatroom.hpp"
+#include "Message.hpp"
 
 namespace meow {
 
 using boost::asio::ip::tcp;
 
-class chat_room;
+class Chatroom;
 
 class Server {
 public:
@@ -25,7 +25,7 @@ private:
 
     tcp::acceptor acceptor_;
     tcp::socket socket_;
-    chat_room room_;
+    Chatroom room_;
 };
 
 }

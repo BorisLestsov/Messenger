@@ -4,14 +4,14 @@
 
 #include <memory>
 
-#include "chat_message.hpp"
+#include "Message.hpp"
 
 namespace meow {
 
 class ChatParticipant {
 public:
   virtual ~ChatParticipant();
-  virtual void deliver(const chat_message& msg) = 0;
+  virtual void deliver(const Message& msg) = 0;
 };
 
 typedef std::shared_ptr<ChatParticipant> chat_participant_ptr;

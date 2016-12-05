@@ -1,24 +1,24 @@
 #include <set>
 
-#include "chat_participant.hpp"
-#include "chat_message.hpp"
-#include "chat_room.hpp"
+#include "Participant.hpp"
+#include "Message.hpp"
+#include "Chatroom.hpp"
 
 namespace meow {
 
-void chat_room::join(chat_participant_ptr participant)
+void Chatroom::join(chat_participant_ptr participant)
 {
     participants_.insert(participant);
     for (auto msg: recent_msgs_)
       participant->deliver(msg);   // send all recent messages to a new participant of chat
 }
 
-void chat_room::leave(chat_participant_ptr participant)
+void Chatroom::leave(chat_participant_ptr participant)
   {
     participants_.erase(participant);
 }
 
-void chat_room::deliver(const chat_message& msg)
+void Chatroom::deliver(const Message& msg)
 {
     recent_msgs_.push_back(msg);
     while (recent_msgs_.size() > max_recent_msgs)
@@ -28,7 +28,7 @@ void chat_room::deliver(const chat_message& msg)
 		participant->deliver(msg);
 }
 
-size_t chat_room::size() const
+size_t Chatroom::size() const
 {
 	return participants_.size();
 }

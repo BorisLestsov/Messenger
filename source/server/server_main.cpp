@@ -19,10 +19,10 @@
 #include <utility>
 #include <boost/asio.hpp>
 
-#include "chat_participant.hpp"
-#include "chat_session.hpp"
-#include "chat_room.hpp"
-#include "chat_message.hpp"
+#include "Participant.hpp"
+#include "Session.hpp"
+#include "Chatroom.hpp"
+#include "Message.hpp"
 #include "Server.hpp"
 
 #define MAX_CMD_LEN 256

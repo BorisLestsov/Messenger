@@ -4,23 +4,23 @@
 
 #include <boost/asio.hpp>
 
-#include "chat_participant.hpp"
-#include "chat_room.hpp"
-#include "chat_message.hpp"
+#include "Participant.hpp"
+#include "Chatroom.hpp"
+#include "Message.hpp"
 
 namespace meow {
 
 using boost::asio::ip::tcp;
 
-class chat_session
+class Session
   : public ChatParticipant,
-    public std::enable_shared_from_this<chat_session>
+    public std::enable_shared_from_this<Session>
 {
 public:
-	chat_session(tcp::socket socket, chat_room& room);
+	Session(tcp::socket socket, Chatroom& room);
 
 	void start();
-	void deliver(const chat_message& msg);
+	void deliver(const Message& msg);
 
 private:
 	void do_read_header();
@@ -28,8 +28,8 @@ private:
 	void do_write();
 
 	tcp::socket socket_;
-	chat_room& room_;
-	chat_message read_msg_;
+	Chatroom& room_;
+	Message read_msg_;
 	chat_message_queue write_msgs_;
 };
 
