@@ -2,6 +2,7 @@
 #ifndef _NET_CONTROLLER_HPP_INCLUDED
 #define _NET_CONTROLLER_HPP_INCLUDED
 
+#include "ClientModel.hpp"
 #include "Message.hpp"
 
 namespace meow {

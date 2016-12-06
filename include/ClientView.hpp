@@ -8,6 +8,8 @@
 namespace meow {
 
 	class ClientView : public Observer {
+	public:
+		virtual ~ClientView();
 	protected:
 		ClientView(NetController*);
 	private:
