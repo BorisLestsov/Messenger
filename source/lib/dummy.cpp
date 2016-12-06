@@ -1,1 +1,1 @@
-int f() {}
+#include <iostream>

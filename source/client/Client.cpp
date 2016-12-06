@@ -22,7 +22,7 @@ namespace meow {
     }
 
     void Client::write(const Message &msg) {
-        std::function write_f = [this, msg]() {
+        auto write_f = [this, msg]() {
             bool write_in_progress = !write_msgs_.empty();
 
             write_msgs_.push_back(msg);
@@ -38,7 +38,7 @@ namespace meow {
     }
 
     void Client::do_connect(tcp::resolver::iterator endpoint_iterator) {
-        std::function connect_f = [this](boost::system::error_code ec, tcp::resolver::iterator) {
+        auto connect_f = [this](boost::system::error_code ec, tcp::resolver::iterator) {
             if (!ec)
                 do_read_header();
         };
@@ -50,7 +50,7 @@ namespace meow {
     }
 
     void Client::do_read_header() {
-        std::function read_header_f = [this](boost::system::error_code ec,
+        auto read_header_f = [this](boost::system::error_code ec,
                                              std::size_t length) {
             if (!ec && read_msg_.decode_header())
                 do_read_body();
@@ -69,7 +69,7 @@ namespace meow {
     }
 
     void Client::do_read_body() {
-        std::function read_body_f = [this](boost::system::error_code ec,
+        auto read_body_f = [this](boost::system::error_code ec,
                                            std::size_t length) {
             if (!ec) {
                 std::cout.write(read_msg_.body(), read_msg_.body_length());
@@ -88,7 +88,7 @@ namespace meow {
     }
 
     void Client::do_write() {
-        std::function write_f = [this](boost::system::error_code ec,
+        auto write_f = [this](boost::system::error_code ec,
                                        std::size_t length) {
             if (!ec) {
                 write_msgs_.pop_front();

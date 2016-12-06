@@ -2,7 +2,7 @@
 
 namespace meow {
 
-ChatParticipant::~ChatParticipant(){
+Participant::~Participant(){
 
 
 }

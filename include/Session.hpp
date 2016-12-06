@@ -13,7 +13,7 @@ namespace meow {
 using boost::asio::ip::tcp;
 
 class Session
-  : public ChatParticipant,
+  : public Participant,
     public std::enable_shared_from_this<Session>
 {
 public:
