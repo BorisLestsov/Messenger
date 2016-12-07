@@ -36,10 +36,9 @@ int main(int argc, char* argv[]) {
 
         cout << "Please, type messages:" << endl;
         while (std::cin.getline(line, Message::MAX_BODY_LENGTH + 1)) {
-            Message msg;
-            msg.body_length(std::strlen(line));
-            std::memcpy(msg.body(), line, msg.body_length());
-            msg.encode_header();
+            Message msg(Message::MsgType::TEXT, line, 42, 69, 100500);
+
+            //msg.encode_header();
             c.write(msg);
         }
 
@@ -47,7 +46,7 @@ int main(int argc, char* argv[]) {
         t.join();
     }
     catch (std::exception &e) {
-        std::cerr << "Exception: " << e.what() << "\n";
+        std::cerr << "Exception: " << e.what() << endl;
     }
 
     return 0;

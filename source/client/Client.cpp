@@ -9,6 +9,19 @@
 
 namespace meow {
 
+    /*  Вообщем, я вроде бы исправил write, do_write, но пока не тестил
+     *
+     *  Что нужно сделать:
+     *  1) придумать как будет работать read и все с ним связанное
+     *  По идее, нужно читать из сокета в какой-то буфер, а потом восстановить из него
+     *  исходное сообщение.
+     *  Конструктор, это делающий, уже есть в Message, но он принимает
+     *  SerializedMessage.
+     *
+     *  2) Перепилить сервер, а именно класс Session
+     */
+
+
     using boost::asio::ip::tcp;
 
     typedef std::deque<Message> chat_message_queue;
@@ -52,18 +65,15 @@ namespace meow {
     void Client::do_read_header() {
         auto read_header_f = [this](boost::system::error_code ec,
                                              std::size_t length) {
-            if (!ec && read_msg_.decode_header())
+            if (!ec /* && read_msg_.decode_header()*/)
                 do_read_body();
             else
                 socket_.close();
         };
 
-        // FIXME: Why "do_read_body" in "do_read_header"
-
-
         boost::asio::async_read(socket_,
                                 boost::asio::buffer(read_msg_.data(),
-                                Message::HEADER_LENGTH),
+                                SerializedMessage::HEADER_LENGTH),
                                 read_header_f
         );
     }
@@ -99,10 +109,11 @@ namespace meow {
                 socket_.close();
         };
 
+        SerializedMessage msg_buf = write_msgs_.front().serialize();
 
         boost::asio::async_write(socket_,
-                                 boost::asio::buffer(write_msgs_.front().data(),
-                                 write_msgs_.front().length()),
+                                 boost::asio::buffer(msg_buf.get_buf(),
+                                 msg_buf.get_msg_len()),
                                  write_f
         );
     }

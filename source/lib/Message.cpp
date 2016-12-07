@@ -4,6 +4,13 @@
 
 namespace meow {
 
+    const ulong SerializedMessage::HEADER_LENGTH = sizeof(Message::msg_type_) +
+                                                   sizeof(Message::uid_from_) +
+                                                   sizeof(Message::uid_to_) +
+                                                   sizeof(Message::sending_date_) +
+                                                   sizeof(SerializedMessage::body_length);
+
+
     SerializedMessage::SerializedMessage(const Message &msg) {
         buf = new char[sizeof(msg.msg_type_) + msg.msg_body_.size()];
         char *ptr = buf;
@@ -16,7 +23,11 @@ namespace meow {
         ptr += sizeof(msg.uid_to_);
         memcpy(ptr, &msg.sending_date_, sizeof(msg.sending_date_));
         ptr += sizeof(msg.sending_date_);
-        memcpy(ptr, msg.msg_body_.data(), msg.msg_body_.size());
+
+        body_length = msg.msg_body_.size();
+        memcpy(ptr, &body_length, sizeof(body_length));
+        ptr += sizeof(body_length);
+        memcpy(ptr, msg.msg_body_.data(), body_length);
         ptr += msg.msg_body_.size();
 
         msg_length = ptr - buf;
@@ -26,12 +37,20 @@ namespace meow {
         delete []buf;
     }
 
-    SerializedMessage::operator char *() {
+    char *SerializedMessage::get_buf() const {
         return buf;
     }
 
+    /*SerializedMessage::operator void *() {
+        return buf;
+    }*/
+
     ulong SerializedMessage::get_msg_len() const {
         return msg_length;
+    }
+
+    ulong SerializedMessage::get_body_len() const {
+        return body_length;
     }
 
 
@@ -84,7 +103,11 @@ namespace meow {
         ptr += sizeof(uid_to_);
         memcpy(&sending_date_, ptr, sizeof(sending_date_));
         ptr += sizeof(sending_date_);
-        msg_body_ = string(ptr, ser_msg.msg_length - (ulong) (ptr-buf));
+
+        ulong body_len;
+        memcpy(&body_len, ptr, sizeof(body_len));
+        ptr += sizeof(body_len);
+        msg_body_ = string(ptr, ser_msg.body_length);
     }
 
     SerializedMessage Message::serialize() const {
