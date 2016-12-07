@@ -23,7 +23,9 @@ namespace meow {
 		static const msgtype_t TYPE_INVITE;
 		
 		Message2();
+		Message2(char* raw);  // deserialization from raw bytes
 		size_t size() const;
+		size_t header_size() const;
 		size_t serialize(char* bytes) const;
 	private:
 		// header

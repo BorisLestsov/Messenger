@@ -1,5 +1,6 @@
 #include <cstring>
 #include <ctime>
+#include <stdexcept>
 #include <string>
 
 #include "Message2.hpp"
@@ -26,15 +27,28 @@ namespace meow {
 	{
 	}
 	
+	Message2::Message2(char* raw_bytes)
+		:	Message2()
+	{
+		size_t required_min_len = header_size();
+		size_t actual_len = strlen(raw_bytes);
+		if (actual_len < required_min_len)
+			throw std::invalid_argument("while deserialization");
+	}
+	
 	size_t Message2::size() const
+	{
+		return header_size() + strlen(body_);
+	}
+	
+	size_t Message2::header_size() const
 	{
 		return
 			sizeof(Message2::msgtype_t) +
 			sizeof(Message2::version_t) +
 			2*sizeof(Message2::uid_t) +
 			sizeof(Message2::send_date_t) +
-			sizeof(size_t) +
-			strlen(body_);
+			sizeof(size_t);
 	}
 	
 	size_t Message2::serialize(char* bytes) const
