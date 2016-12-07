@@ -1,13 +1,3 @@
-//
-// chat_server.cpp
-// ~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include <cstdlib>
 #include <deque>
 #include <iostream>
@@ -33,6 +23,7 @@ using std::cin;
 using std::cerr;
 using std::endl;
 using std::string;
+
 using namespace meow;
 
 void show_help();
@@ -40,7 +31,7 @@ void show_help();
 int main(int argc, char* argv[])
 {
     try {
-        if (argc < 2) {
+        if (argc != 2) {
             std::cerr << "Usage: ./Server <port>\n";
             return 1;
         }
@@ -56,7 +47,7 @@ int main(int argc, char* argv[])
         std::thread t([&io_service] () {
 			io_service.run();
 		});
-		
+
 		cout << "Server succesfully started." << endl;
 		cout << "Now you may use command-line interface to manage it." << endl;
 		cout << "meow |> ";
@@ -75,7 +66,7 @@ int main(int argc, char* argv[])
 				show_help();
 			cout << "meow |> ";
 		}
-		
+
 		t.join();
     }
     catch (std::exception& e) {
@@ -85,12 +76,11 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void show_help()
-{
+void show_help() {
 	cout << "Welcome to the Meow Messenger Server command line!" << endl;
 	cout << "Available options:" << endl;
-	cout << "  help, ?       Print this message" << endl;
-	cout << "  stats         Brief statistics about connections" << endl;
-	cout << "  quit, exit    Shutdown server and quit" << endl;
+	cout << "   help, ?       Print this message" << endl;
+	cout << "   stats         Brief statistics about connections" << endl;
+	cout << "   quit, exit    Shutdown server and quit" << endl;
 	cout << endl;
 }

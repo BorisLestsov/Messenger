@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _CLIENT_VIEW_HPP_INCLUDED
 #define _CLIENT_VIEW_HPP_INCLUDED
 

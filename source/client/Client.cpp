@@ -63,7 +63,7 @@ namespace meow {
 
         boost::asio::async_read(socket_,
                                 boost::asio::buffer(read_msg_.data(),
-                                Message::header_length),
+                                Message::HEADER_LENGTH),
                                 read_header_f
         );
     }

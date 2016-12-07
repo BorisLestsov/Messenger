@@ -10,6 +10,7 @@
 #include "Message.hpp"
 
 using boost::asio::ip::tcp;
+
 using namespace meow;
 
 int main(int argc, char* argv[]) {
@@ -31,10 +32,10 @@ int main(int argc, char* argv[]) {
             io_service.run();
         });
 
-        char line[Message::max_body_length + 1];
+        char line[Message::MAX_BODY_LENGTH + 1];
 
         cout << "Please, type messages:" << endl;
-        while (std::cin.getline(line, Message::max_body_length + 1)) {
+        while (std::cin.getline(line, Message::MAX_BODY_LENGTH + 1)) {
             Message msg;
             msg.body_length(std::strlen(line));
             std::memcpy(msg.body(), line, msg.body_length());

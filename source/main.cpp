@@ -1,23 +1,18 @@
-#include <cstring>
-#include <string>
+#include <Message.hpp>
+#include <iostream>
+#include <ctime>
 
-int main(int argc, char**argv)
-{
-    if (argc != 2) {
-        printf("Usage: meow [server|client]\n");
-        return 1;
-    }
-    else if (!strcmp(argv[1], "server")) {
-        printf("Starting server\n");
-        return 0;
-    }
-    else if (!strcmp(argv[1], "client"))  {
-        printf("Starting client\n");
-        return 0;
-    }
-    else {
-        printf("Unrecognized command-line option: %s\n", argv[1]);
-        return 1;
-    }
+using namespace meow;
+
+int main(int argc, char**argv) {
+    Message s(Message::MsgType::TEXT, "Dratuti)))00", 5,6,7);
+
+    SerializedMessage ser = s.serialize();
+
+    Message msg(ser);
+
+    cout << msg;
+
+    return 0;
 }
 
