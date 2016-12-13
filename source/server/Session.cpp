@@ -28,44 +28,62 @@ namespace meow {
 
 	void Session::do_read_header() {
 		auto self(shared_from_this());
+
+		auto read_header_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
+			if (!ec) {
+                msg_buf.decode_msg_length();
+                do_read_body();
+            } else
+				room_.leave(shared_from_this());
+		};
+
 		boost::asio::async_read(socket_,
-								boost::asio::buffer(read_msg_.data(), Message::HEADER_LENGTH),
-								[this, self](boost::system::error_code ec, std::size_t /*length*/) {
-									if (!ec && read_msg_.decode_header())
-										do_read_body();
-									else
-										room_.leave(shared_from_this());
-								});
+                                boost::asio::buffer(msg_buf.get_buf(),
+                                SerializedMessage::HEADER_LENGTH),
+                                read_header_f
+        );
 	}
 
 	void Session::do_read_body() {
 		auto self(shared_from_this());
+        auto read_body_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                Message msg(msg_buf);
+                room_.deliver(msg);
+                do_read_header();
+            } else {
+                room_.leave(shared_from_this());
+            }
+        };
+
 		boost::asio::async_read(socket_,
-								boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
-								[this, self](boost::system::error_code ec, std::size_t /*length*/) {
-									if (!ec) {
-										room_.deliver(read_msg_);
-										do_read_header();
-									} else {
-										room_.leave(shared_from_this());
-									}
-								});
+								boost::asio::buffer(msg_buf.get_body_buf(),
+                                msg_buf.get_body_len()),
+								read_body_f
+        );
 	}
 
 	void Session::do_write() {
 		auto self(shared_from_this());
-		boost::asio::async_write(socket_,
-								 boost::asio::buffer(write_msgs_.front().data(),
-													 write_msgs_.front().length()),
-								 [this, self](boost::system::error_code ec, std::size_t /*length*/) {
-									 if (!ec) {
-										 write_msgs_.pop_front();
-										 if (!write_msgs_.empty())
-											 do_write();
-									 } else {
-										 room_.leave(shared_from_this());
-									 }
-								 });
+
+        auto write_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                write_msgs_.pop_front();
+                if (!write_msgs_.empty())
+                    do_write();
+            } else {
+                room_.leave(shared_from_this());
+            }
+        };
+
+        SerializedMessage msg_buf = write_msgs_.front().serialize();
+
+        boost::asio::async_write(socket_,
+								 boost::asio::buffer(msg_buf.get_buf(),
+													 msg_buf.get_msg_len()),
+                                 write_f
+
+        );
 	}
 
 } // namespace meow

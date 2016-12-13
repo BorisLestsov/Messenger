@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _CHAT_SESSION_HPP_INCLUDED
 #define _CHAT_SESSION_HPP_INCLUDED
 
@@ -29,7 +28,7 @@ private:
 
 	tcp::socket socket_;
 	Chatroom& room_;
-	Message read_msg_;
+	SerializedMessage msg_buf;
 	chat_message_queue write_msgs_;
 };
 

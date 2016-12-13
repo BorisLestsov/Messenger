@@ -9,18 +9,6 @@
 
 namespace meow {
 
-    /*  Вообщем, я вроде бы исправил write, do_write, но пока не тестил
-     *
-     *  Что нужно сделать:
-     *  Придумать как будет работать read и все с ним связанное
-     *  По идее, нужно читать из сокета в какой-то буфер, а потом восстановить из него
-     *  исходное сообщение.
-     *  Конструктор, это делающий, уже есть в Message, но он принимает
-     *  SerializedMessage.
-     *
-     */
-
-
     using boost::asio::ip::tcp;
 
     typedef std::deque<Message> chat_message_queue;
@@ -29,9 +17,9 @@ namespace meow {
                    tcp::resolver::iterator endpoint_iterator):
             io_service_(io_service),
             socket_(io_service),
-            msg_buf()
+            msg_buf_()
     {
-        msg_buf.resize(SerializedMessage::MAX_MSG_LENGTH);
+        msg_buf_.resize(SerializedMessage::MAX_MSG_LENGTH);
         do_connect(endpoint_iterator);
     }
 
@@ -67,14 +55,14 @@ namespace meow {
         auto read_header_f = [this](boost::system::error_code ec,
                                              std::size_t length) {
             if (!ec) {
-                msg_buf.decode_msg_length();
+                msg_buf_.decode_msg_length();
                 do_read_body();
             } else
                 socket_.close();
         };
 
         boost::asio::async_read(socket_,
-                                boost::asio::buffer(msg_buf.get_buf(),
+                                boost::asio::buffer(msg_buf_.get_buf(),
                                 SerializedMessage::HEADER_LENGTH),
                                 read_header_f
         );
@@ -86,7 +74,7 @@ namespace meow {
             if (!ec) {
 //                std::cout.write(msg_buf.get_body_buf(), msg_buf.get_body_len());
 //                std::cout << endl;
-                Message msg(msg_buf);
+                Message msg(msg_buf_);
                 cout << msg;
 
                 do_read_header();
@@ -96,8 +84,8 @@ namespace meow {
 
 
         boost::asio::async_read(socket_,
-                                boost::asio::buffer(msg_buf.get_body_buf(),
-                                msg_buf.get_body_len()),
+                                boost::asio::buffer(msg_buf_.get_body_buf(),
+                                msg_buf_.get_body_len()),
                                 read_body_f
         );
     }
