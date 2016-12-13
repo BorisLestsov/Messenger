@@ -40,7 +40,7 @@ namespace meow {
         friend class Message;
 
     private:
-        static const LENGTH_OFFSET_;
+        static const ptrdiff_t LENGTH_OFFSET_;
 
         size_t msg_length_;
         size_t body_length_;

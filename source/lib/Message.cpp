@@ -11,7 +11,7 @@ namespace meow {
                                                    sizeof(SerializedMessage::body_length_);
     const size_t SerializedMessage::MAX_MSG_LENGTH = Message::MAX_BODY_LENGTH + HEADER_LENGTH;
 
-    const SerializedMessage::LENGTH_OFFSET_ = sizeof(Message::msg_type_) +
+    const ptrdiff_t SerializedMessage::LENGTH_OFFSET_ = sizeof(Message::msg_type_) +
                                               sizeof(Message::uid_from_) +
                                               sizeof(Message::uid_to_) +
                                               sizeof(Message::sending_date_);

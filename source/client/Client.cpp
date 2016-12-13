@@ -84,8 +84,11 @@ namespace meow {
         auto read_body_f = [this](boost::system::error_code ec,
                                            std::size_t length) {
             if (!ec) {
-                std::cout.write(msg_buf.get_body_buf(), msg_buf.get_body_len());
-                std::cout << endl;
+//                std::cout.write(msg_buf.get_body_buf(), msg_buf.get_body_len());
+//                std::cout << endl;
+                Message msg(msg_buf);
+                cout << msg;
+
                 do_read_header();
             } else
                 socket_.close();
@@ -93,8 +96,8 @@ namespace meow {
 
 
         boost::asio::async_read(socket_,
-                                boost::asio::buffer(read_msg_.body(),
-                                read_msg_.body_length()),
+                                boost::asio::buffer(msg_buf.get_body_buf(),
+                                msg_buf.get_body_len()),
                                 read_body_f
         );
     }
