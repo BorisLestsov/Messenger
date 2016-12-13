@@ -75,7 +75,7 @@ namespace meow {
         if (len > MAX_MSG_LENGTH || len < HEADER_LENGTH)
             throw length_error("Wrong length in resize");
 
-        if (!buf) {;
+        if (buf) {;
             char* buf2 = new char[len];
             memcpy(buf2, buf, msg_length_);
             delete []buf;
@@ -90,7 +90,7 @@ namespace meow {
         if (!buf || msg_length_ < HEADER_LENGTH)
             throw runtime_error("Attempt to decode empty message");
 
-        body_length_ = ((size_t*) buf)[LENGTH_OFFSET_];
+        body_length_ = (size_t) buf[LENGTH_OFFSET_];
     }
 
 
