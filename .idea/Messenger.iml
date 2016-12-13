@@ -16,13 +16,12 @@
       <sourceFolder url="file://$MODULE_DIR$/include/NetController.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/lib/Message.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/source/lib/dummy.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/client/ClientApp.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/client/Client.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/source/client/ClientView.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/client/ClientModel.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/client/client_main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/client/NetController.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/source/client/ClientModel.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/source/client/ClientView.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/server/Session.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/server/ChatParticipant.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/source/server/Chatroom.cpp" isTestSource="false" />

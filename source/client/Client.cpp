@@ -12,13 +12,12 @@ namespace meow {
     /*  Вообщем, я вроде бы исправил write, do_write, но пока не тестил
      *
      *  Что нужно сделать:
-     *  1) придумать как будет работать read и все с ним связанное
+     *  Придумать как будет работать read и все с ним связанное
      *  По идее, нужно читать из сокета в какой-то буфер, а потом восстановить из него
      *  исходное сообщение.
      *  Конструктор, это делающий, уже есть в Message, но он принимает
      *  SerializedMessage.
      *
-     *  2) Перепилить сервер, а именно класс Session
      */
 
 
@@ -29,8 +28,10 @@ namespace meow {
     Client::Client(boost::asio::io_service &io_service,
                    tcp::resolver::iterator endpoint_iterator):
             io_service_(io_service),
-            socket_(io_service)
+            socket_(io_service),
+            msg_buf()
     {
+        msg_buf.resize(SerializedMessage::MAX_MSG_LENGTH);
         do_connect(endpoint_iterator);
     }
 
@@ -65,14 +66,15 @@ namespace meow {
     void Client::do_read_header() {
         auto read_header_f = [this](boost::system::error_code ec,
                                              std::size_t length) {
-            if (!ec /* && read_msg_.decode_header()*/)
+            if (!ec) {
+                msg_buf.decode_msg_length();
                 do_read_body();
-            else
+            } else
                 socket_.close();
         };
 
         boost::asio::async_read(socket_,
-                                boost::asio::buffer(read_msg_.data(),
+                                boost::asio::buffer(msg_buf.get_buf(),
                                 SerializedMessage::HEADER_LENGTH),
                                 read_header_f
         );
@@ -82,7 +84,7 @@ namespace meow {
         auto read_body_f = [this](boost::system::error_code ec,
                                            std::size_t length) {
             if (!ec) {
-                std::cout.write(read_msg_.body(), read_msg_.body_length());
+                std::cout.write(msg_buf.get_body_buf(), msg_buf.get_body_len());
                 std::cout << endl;
                 do_read_header();
             } else

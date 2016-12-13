@@ -36,7 +36,7 @@ namespace meow {
     private:
         boost::asio::io_service &io_service_;
         tcp::socket socket_;
-        //SerializedMessage msg_buf;
+        SerializedMessage msg_buf;
         Message read_msg_;
         chat_message_queue write_msgs_;
     };

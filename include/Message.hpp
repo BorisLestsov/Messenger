@@ -1,12 +1,14 @@
 #ifndef CHAT_MESSAGE_HPP
 #define CHAT_MESSAGE_HPP
 
+#include <stdexcept>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <deque>
-
 #include <string>
+
 
 namespace meow {
 
@@ -16,34 +18,42 @@ namespace meow {
 
     class SerializedMessage {
     public:
-        static const ulong HEADER_LENGTH;
+        static const size_t HEADER_LENGTH;
+        static const size_t MAX_MSG_LENGTH;
 
+        SerializedMessage();
         SerializedMessage(const Message &);
-
         ~SerializedMessage();
 
-        char *get_buf() const;
+        void decode_msg_length();
+
+        char *get_buf();
+        char *get_body_buf();
         // const char* operator() () const;
         //operator void *();
 
+        size_t get_msg_len() const;
+        size_t get_body_len() const;
+
+        void resize(size_t length);
+
         friend class Message;
 
-        ulong get_msg_len() const;
-        ulong get_body_len() const;
-
     private:
-        ulong msg_length;
-        ulong body_length;
+        static const LENGTH_OFFSET_;
+
+        size_t msg_length_;
+        size_t body_length_;
         char *buf;
     };
 
 
     class Message {
     public:
-        typedef ulong uid_t;
+        typedef size_t uid_t;
         typedef time_t send_date_t;
 
-        static const ulong MAX_BODY_LENGTH = 512;
+        static const size_t MAX_BODY_LENGTH = 512;
 
         enum MsgType {
             EMPTY = 0, TEXT, LOGIN, LOGOUT, CREATE_ROOM, INVITE

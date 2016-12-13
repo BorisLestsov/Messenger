@@ -4,11 +4,17 @@
 
 namespace meow {
 
-    const ulong SerializedMessage::HEADER_LENGTH = sizeof(Message::msg_type_) +
+    const size_t SerializedMessage::HEADER_LENGTH = sizeof(Message::msg_type_) +
                                                    sizeof(Message::uid_from_) +
                                                    sizeof(Message::uid_to_) +
                                                    sizeof(Message::sending_date_) +
-                                                   sizeof(SerializedMessage::body_length);
+                                                   sizeof(SerializedMessage::body_length_);
+    const size_t SerializedMessage::MAX_MSG_LENGTH = Message::MAX_BODY_LENGTH + HEADER_LENGTH;
+
+    const SerializedMessage::LENGTH_OFFSET_ = sizeof(Message::msg_type_) +
+                                              sizeof(Message::uid_from_) +
+                                              sizeof(Message::uid_to_) +
+                                              sizeof(Message::sending_date_);
 
 
     SerializedMessage::SerializedMessage(const Message &msg) {
@@ -24,33 +30,67 @@ namespace meow {
         memcpy(ptr, &msg.sending_date_, sizeof(msg.sending_date_));
         ptr += sizeof(msg.sending_date_);
 
-        body_length = msg.msg_body_.size();
-        memcpy(ptr, &body_length, sizeof(body_length));
-        ptr += sizeof(body_length);
-        memcpy(ptr, msg.msg_body_.data(), body_length);
+        body_length_ = msg.msg_body_.size();
+        memcpy(ptr, &body_length_, sizeof(body_length_));
+        ptr += sizeof(body_length_);
+        memcpy(ptr, msg.msg_body_.data(), body_length_);
         ptr += msg.msg_body_.size();
 
-        msg_length = ptr - buf;
+        msg_length_ = ptr - buf;
     }
 
     SerializedMessage::~SerializedMessage() {
         delete []buf;
     }
 
-    char *SerializedMessage::get_buf() const {
+    char *SerializedMessage::get_buf() {
         return buf;
+    }
+
+
+    char *SerializedMessage::get_body_buf() {
+        return buf + HEADER_LENGTH;
     }
 
     /*SerializedMessage::operator void *() {
         return buf;
     }*/
 
-    ulong SerializedMessage::get_msg_len() const {
-        return msg_length;
+    size_t SerializedMessage::get_msg_len() const {
+        return msg_length_;
     }
 
-    ulong SerializedMessage::get_body_len() const {
-        return body_length;
+    size_t SerializedMessage::get_body_len() const {
+        return body_length_;
+    }
+
+    SerializedMessage::SerializedMessage():
+            msg_length_(0),
+            body_length_(0),
+            buf(nullptr)
+    {}
+
+    void SerializedMessage::resize(size_t len) {
+        // TODO fix that
+        if (len > MAX_MSG_LENGTH || len < HEADER_LENGTH)
+            throw length_error("Wrong length in resize");
+
+        if (!buf) {;
+            char* buf2 = new char[len];
+            memcpy(buf2, buf, msg_length_);
+            delete []buf;
+            msg_length_ = len;
+        } else {
+            buf = new char[len];
+            msg_length_ = len;
+        }
+    }
+
+    void SerializedMessage::decode_msg_length() {
+        if (!buf || msg_length_ < HEADER_LENGTH)
+            throw runtime_error("Attempt to decode empty message");
+
+        body_length_ = ((size_t*) buf)[LENGTH_OFFSET_];
     }
 
 
@@ -104,10 +144,10 @@ namespace meow {
         memcpy(&sending_date_, ptr, sizeof(sending_date_));
         ptr += sizeof(sending_date_);
 
-        ulong body_len;
+        size_t body_len;
         memcpy(&body_len, ptr, sizeof(body_len));
         ptr += sizeof(body_len);
-        msg_body_ = string(ptr, ser_msg.body_length);
+        msg_body_ = string(ptr, ser_msg.body_length_);
     }
 
     SerializedMessage Message::serialize() const {
