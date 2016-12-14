@@ -13,7 +13,7 @@ namespace meow {
 
     using boost::asio::ip::tcp;
 
-    typedef std::deque<Message> chat_message_queue;
+    typedef std::deque<SerializedMessage> chat_message_queue;
 
     class Client {
     public:

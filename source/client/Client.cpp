@@ -11,7 +11,7 @@ namespace meow {
 
     using boost::asio::ip::tcp;
 
-    typedef std::deque<Message> chat_message_queue;
+    typedef std::deque<SerializedMessage> chat_message_queue;
 
     Client::Client(boost::asio::io_service &io_service,
                    tcp::resolver::iterator endpoint_iterator):
@@ -104,7 +104,7 @@ namespace meow {
                 socket_.close();
         };
 
-        SerializedMessage msg_buf = write_msgs_.front().serialize();
+        SerializedMessage msg_buf = write_msgs_.front();
 
         boost::asio::async_write(socket_,
                                  boost::asio::buffer(msg_buf.get_buf(),

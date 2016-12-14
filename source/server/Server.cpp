@@ -1,18 +1,19 @@
 #include <boost/asio.hpp>
+#include <iostream>
 #include "Server.hpp"
 
 namespace meow {
 
 using boost::asio::ip::tcp;
 
-Server::Server(boost::asio::io_service& io_service, const tcp::endpoint& endpoint)
-    : acceptor_(io_service, endpoint),  socket_(io_service)
+Server::Server(boost::asio::io_service& io_service, const tcp::endpoint& endpoint):
+        acceptor_(io_service, endpoint),
+        socket_(io_service)
 {
     do_accept();
 }
 
-size_t Server::n_opened() const
-{
+size_t Server::n_opened() const {
 	return room_.size();
 }
 

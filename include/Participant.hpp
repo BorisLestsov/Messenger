@@ -7,13 +7,14 @@
 
 namespace meow {
 
-class Participant {
-public:
-  virtual ~Participant();
-  virtual void deliver(const Message& msg) = 0;
-};
+    class Participant {
+    public:
+        virtual ~Participant();
 
-typedef std::shared_ptr<Participant> chat_participant_ptr;
+        virtual void deliver(const SerializedMessage &msg) = 0;
+    };
+
+    typedef std::shared_ptr<Participant> chat_participant_ptr;
 
 } // namespace meow
 

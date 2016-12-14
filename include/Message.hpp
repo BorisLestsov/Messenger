@@ -91,7 +91,7 @@ namespace meow {
 
     ostream &operator<<(ostream &o, const Message &msg);
 
-    typedef std::deque<Message> chat_message_queue;
+    typedef std::deque<SerializedMessage> chat_message_queue; // TODO: WTF?
 }
 
 #endif // CHAT_MESSAGE_HPP

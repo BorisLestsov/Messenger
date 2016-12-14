@@ -1,4 +1,5 @@
 #include <boost/asio.hpp>
+#include <iostream>
 
 #include "Chatroom.hpp"
 #include "Message.hpp"
@@ -10,7 +11,10 @@ namespace meow {
 
 	Session::Session(tcp::socket socket, Chatroom &room)
 			: socket_(std::move(socket)),
-			  room_(room) {
+			  room_(room),
+              msg_buf_()
+    {
+        msg_buf_.resize(SerializedMessage::MAX_MSG_LENGTH);
 	}
 
 	void Session::start() {
@@ -18,7 +22,7 @@ namespace meow {
 		do_read_header();
 	}
 
-	void Session::deliver(const Message &msg) {
+	void Session::deliver(const SerializedMessage &msg) {
 		bool write_in_progress = !write_msgs_.empty();
 		write_msgs_.push_back(msg);
 		if (!write_in_progress)
@@ -31,14 +35,16 @@ namespace meow {
 
 		auto read_header_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
 			if (!ec) {
-                msg_buf.decode_msg_length();
+                msg_buf_.decode_msg_length();
                 do_read_body();
-            } else
-				room_.leave(shared_from_this());
+            } else {
+                std::cout << "ec in session::do_read_header" << endl;
+                room_.leave(shared_from_this());
+            }
 		};
 
 		boost::asio::async_read(socket_,
-                                boost::asio::buffer(msg_buf.get_buf(),
+                                boost::asio::buffer(msg_buf_.get_buf(),
                                 SerializedMessage::HEADER_LENGTH),
                                 read_header_f
         );
@@ -48,17 +54,18 @@ namespace meow {
 		auto self(shared_from_this());
         auto read_body_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
             if (!ec) {
-                Message msg(msg_buf);
+                Message msg(msg_buf_);
                 room_.deliver(msg);
                 do_read_header();
             } else {
+                std::cout << "ec in session::do_read_body" << endl;
                 room_.leave(shared_from_this());
             }
         };
 
 		boost::asio::async_read(socket_,
-								boost::asio::buffer(msg_buf.get_body_buf(),
-                                msg_buf.get_body_len()),
+								boost::asio::buffer(msg_buf_.get_body_buf(),
+                                msg_buf_.get_body_len()),
 								read_body_f
         );
 	}
@@ -72,11 +79,12 @@ namespace meow {
                 if (!write_msgs_.empty())
                     do_write();
             } else {
+				std::cout << "ec in session::do_write" << endl;
                 room_.leave(shared_from_this());
             }
         };
 
-        SerializedMessage msg_buf = write_msgs_.front().serialize();
+        SerializedMessage msg_buf = write_msgs_.front();
 
         boost::asio::async_write(socket_,
 								 boost::asio::buffer(msg_buf.get_buf(),
