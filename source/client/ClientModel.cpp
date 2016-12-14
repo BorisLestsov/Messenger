@@ -1,9 +1,12 @@
 #include "ClientModel.hpp"
 
 namespace meow {
-	
-	ClientModel::~ClientModel()
-	{
-	}
+    namespace client {
 
+
+        ClientModel::~ClientModel() {
+
+        }
+
+    }
 } // namespace meow

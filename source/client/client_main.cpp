@@ -11,6 +11,7 @@
 
 using boost::asio::ip::tcp;
 
+using namespace meow::client;
 using namespace meow;
 
 int main(int argc, char* argv[]) {

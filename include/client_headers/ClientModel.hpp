@@ -6,15 +6,19 @@
 #include "Observer.hpp"
 
 namespace meow {
+	namespace client {
 
-	class ClientModel {
-	public:
-		ClientModel();
-		~ClientModel();
-	private:
-		std::deque<Observer*> observers;
-	}; // class ClientModel
+		class ClientModel {
+		public:
+			ClientModel();
 
+			~ClientModel();
+
+		private:
+			std::deque<Observer *> observers;
+		}; // class ClientModel
+
+	}
 } // namespace meow
 
 
