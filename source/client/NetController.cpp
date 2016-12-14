@@ -1,9 +1,10 @@
 #include "NetController.hpp"
 
 namespace meow {
-	
-	NetController::~NetController()
-	{
+	namespace client {
+
+		NetController::~NetController() {
+		}
+
 	}
-	
 } // namespace meow

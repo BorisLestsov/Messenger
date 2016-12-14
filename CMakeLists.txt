@@ -6,6 +6,10 @@ set(CLIENT_SOURCE_DIR "${SOURCE_DIR}/client")
 set(SERVER_SOURCE_DIR "${SOURCE_DIR}/server")
 set(LIB_SOURCE_DIR "${SOURCE_DIR}/lib")
 set(INCLUDE_DIR "include")
+set(SERVER_INCLUDE_DIR "${INCLUDE_DIR}/Server_headers")
+set(CLIENT_INCLUDE_DIR "${INCLUDE_DIR}/Client_headers")
+set(LIB_INCLUDE_DIR "${INCLUDE_DIR}/Lib_headers")
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
@@ -28,7 +32,9 @@ file(GLOB LIB_SOURCE_FILES
         )
 
 include_directories(${INCLUDE_DIR})
-
+include_directories(${SERVER_INCLUDE_DIR})
+include_directories(${CLIENT_INCLUDE_DIR})
+include_directories(${LIB_INCLUDE_DIR})
 
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})

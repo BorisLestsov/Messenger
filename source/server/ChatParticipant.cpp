@@ -1,11 +1,13 @@
 #include "Participant.hpp"
 
 namespace meow {
+    namespace server {
 
-Participant::~Participant(){
+        Participant::~Participant() {
 
 
-}
+        }
 
+    }
 } // namespace meow
 

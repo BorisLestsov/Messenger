@@ -24,6 +24,7 @@ using std::cerr;
 using std::endl;
 using std::string;
 
+using namespace meow::server;
 using namespace meow;
 
 void show_help();
