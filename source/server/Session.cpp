@@ -1,9 +1,9 @@
 #include <boost/asio.hpp>
 #include <iostream>
 
-#include "Chatroom.hpp"
-#include "Message.hpp"
-#include "Session.hpp"
+#include "server_headers/Chatroom.hpp"
+#include "lib_headers/Message.hpp"
+#include "server_headers/Session.hpp"
 
 namespace meow {
 	namespace server {

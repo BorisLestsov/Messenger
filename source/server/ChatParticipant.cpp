@@ -1,4 +1,4 @@
-#include "Participant.hpp"
+#include "server_headers/Participant.hpp"
 
 namespace meow {
     namespace server {

@@ -2,7 +2,7 @@
 #define _NET_CONTROLLER_HPP_INCLUDED
 
 #include "ClientModel.hpp"
-#include "Message.hpp"
+#include "lib_headers/Message.hpp"
 
 namespace meow {
 	namespace client {

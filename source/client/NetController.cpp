@@ -1,4 +1,4 @@
-#include "NetController.hpp"
+#include "client_headers/NetController.hpp"
 
 namespace meow {
 	namespace client {

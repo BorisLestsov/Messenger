@@ -6,8 +6,8 @@
 #include <thread>
 #include <boost/asio.hpp>
 
-#include "Client.hpp"
-#include "Message.hpp"
+#include "client_headers/Client.hpp"
+#include "lib_headers/Message.hpp"
 
 using boost::asio::ip::tcp;
 

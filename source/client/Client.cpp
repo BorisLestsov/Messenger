@@ -4,8 +4,8 @@
 #include <thread>
 #include <boost/asio.hpp>
 
-#include "Message.hpp"
-#include "Client.hpp"
+#include "lib_headers/Message.hpp"
+#include "client_headers/Client.hpp"
 
 namespace meow {
     namespace client {

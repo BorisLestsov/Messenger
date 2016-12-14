@@ -1,6 +1,6 @@
-#include "ClientModel.hpp"
-#include "ClientView.hpp"
-#include "NetController.hpp"
+#include "client_headers/ClientModel.hpp"
+#include "client_headers/ClientView.hpp"
+#include "client_headers/NetController.hpp"
 
 namespace meow {
 	namespace client {

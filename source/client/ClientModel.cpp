@@ -1,4 +1,4 @@
-#include "ClientModel.hpp"
+#include "client_headers/ClientModel.hpp"
 
 namespace meow {
     namespace client {

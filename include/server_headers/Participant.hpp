@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "Message.hpp"
+#include "lib_headers/Message.hpp"
 
 namespace meow {
     namespace server {
