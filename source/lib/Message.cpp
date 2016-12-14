@@ -18,7 +18,7 @@ namespace meow {
 
 
     SerializedMessage::SerializedMessage(const Message &msg) {
-        buf = new char[sizeof(msg.msg_type_) + msg.msg_body_.size()];
+        buf = new char[HEADER_LENGTH + msg.msg_body_.size()];
         char *ptr = buf;
 
         memcpy(ptr, &msg.msg_type_, sizeof(msg.msg_type_));
@@ -40,7 +40,8 @@ namespace meow {
     }
 
     SerializedMessage::~SerializedMessage() {
-        delete []buf;
+        if (!buf)
+            delete []buf;
     }
 
     char *SerializedMessage::get_buf() {

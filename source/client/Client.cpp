@@ -28,6 +28,7 @@ namespace meow {
             bool write_in_progress = !write_msgs_.empty();
 
             write_msgs_.push_back(msg);
+
             if (!write_in_progress)
                 do_write();
         };
@@ -41,8 +42,9 @@ namespace meow {
 
     void Client::do_connect(tcp::resolver::iterator endpoint_iterator) {
         auto connect_f = [this](boost::system::error_code ec, tcp::resolver::iterator) {
-            if (!ec)
+            if (!ec) {
                 do_read_header();
+            }
         };
 
         boost::asio::async_connect(socket_,
