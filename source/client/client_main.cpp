@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
         }
         
         ClientApp app;
+        std::cout << "invoking main()..." << std::endl;
         app.main(argc-1, ++argv);
 		/*
         boost::asio::io_service io_service;
@@ -52,6 +53,10 @@ int main(int argc, char* argv[]) {
     catch (std::exception &e) {
         std::cerr << "Exception: " << e.what() << endl;
     }
+    catch (...) {
+		std::cerr << "ERROR!" << std::endl;
+		throw;
+	}
 
     return 0;
 }

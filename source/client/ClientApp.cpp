@@ -1,11 +1,18 @@
+#include <iostream>
+
 #include "client_headers/ClientApp.hpp"
 #include "client_headers/ClientModel.hpp"
 #include "client_headers/ClientView.hpp"
 #include "client_headers/NcursesView.hpp"
 #include "client_headers/NetController.hpp"
+#include "lib_headers/Message.hpp"
 
 namespace meow {
 	namespace client {
+		
+		using std::cout;
+		using std::cin;
+		using std::endl;
 
 		const int ClientApp::CONSOLE_APP = 0;
 		const int ClientApp::NCURSES_APP = 1;
@@ -14,12 +21,28 @@ namespace meow {
 		ClientApp::ClientApp()
 		{
 			model_ = new ClientModel();
+			cout << "Model created" << endl;
 			controller_ = new NetController(model_);
+			cout << "Controller created" << endl;
 			view_ = new NcursesView(controller_, model_);
 		}
 		
 		int ClientApp::main(int argc, char** argv)
 		{
+			cout << "opening connection..." << endl;
+			controller_->open_connection(argv[0], argv[1]);
+			
+			char line[Message::MAX_BODY_LENGTH + 1];
+			while (std::cin.getline(line, Message::MAX_BODY_LENGTH + 1)) {
+				Message msg(Message::MsgType::TEXT, line, 42, 69, 100500);
+
+				//msg.encode_header();
+				controller_->write(msg);
+			}
+
+			controller_->close_connection();
+			//t.join();
+			
 			return 0;
 		}
 
