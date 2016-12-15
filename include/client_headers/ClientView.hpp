@@ -11,13 +11,14 @@ namespace meow {
 		class ClientView : public Observer {
 		public:
 			virtual ~ClientView();
+			virtual void update() = 0;
 
 		protected:
-			ClientView(NetController *, ClientModel *);
+			ClientView(NetController*, ClientModel*);
 
 		private:
-			NetController *controller_;
-			ClientModel *model_;
+			NetController* controller_;
+			ClientModel* model_;
 		}; // abstract class ClientView
 
 	}

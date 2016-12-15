@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 
 #include "client_headers/Client.hpp"
+#include "client_headers/ClientApp.hpp"
 #include "lib_headers/Message.hpp"
 
 using boost::asio::ip::tcp;
@@ -20,8 +21,10 @@ int main(int argc, char* argv[]) {
             std::cerr << "Usage: chat_client <host> <port>\n";
             return 1;
         }
-
-
+        
+        ClientApp app;
+        app.main(argc-1, ++argv);
+		/*
         boost::asio::io_service io_service;
 
         tcp::resolver resolver(io_service);
@@ -44,7 +47,7 @@ int main(int argc, char* argv[]) {
         }
 
         c.close();
-        t.join();
+        t.join();*/
     }
     catch (std::exception &e) {
         std::cerr << "Exception: " << e.what() << endl;

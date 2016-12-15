@@ -1,7 +1,7 @@
 #ifndef _CLIENT_MODEL_HPP_INCLUDED
 #define _CLIENT_MODEL_HPP_INCLUDED
 
-#include <deque>
+#include <list>
 
 #include "Observer.hpp"
 
@@ -11,11 +11,13 @@ namespace meow {
 		class ClientModel {
 		public:
 			ClientModel();
-
+			
+			void add_observer(Observer*);
 			~ClientModel();
 
 		private:
-			std::deque<Observer *> observers;
+			std::list<Observer*> observers_;
+			void notify_all();
 		}; // class ClientModel
 
 	}

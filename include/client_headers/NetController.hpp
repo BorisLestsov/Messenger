@@ -9,14 +9,14 @@ namespace meow {
 
 		class NetController {
 		public:
-			NetController();
+			NetController(ClientModel* model);
 
 			~NetController();
 
 			void send(Message &msg);
 
 		private:
-			ClientModel *model;
+			ClientModel* model_;
 		}; // class NetController
 
 	}

@@ -2,8 +2,14 @@
 
 namespace meow {
 	namespace client {
+		
+		NetController::NetController(ClientModel* model)
+			:	model_(model)
+		{
+		}
 
-		NetController::~NetController() {
+		NetController::~NetController()
+		{
 		}
 
 	}
