@@ -29,13 +29,14 @@ namespace meow {
 		{
 			controller_->open_connection(argv[0], argv[1]);
 			
-			char line[Message::MAX_BODY_LENGTH + 1];
+			/*char line[Message::MAX_BODY_LENGTH + 1];
 			while (std::cin.getline(line, Message::MAX_BODY_LENGTH + 1)) {
 				Message msg(Message::MsgType::TEXT, line, 42, 69, 100500);
 
 				//msg.encode_header();
 				controller_->write(msg);
-			}
+			}*/
+			view_->start();
 
 			controller_->close_connection();
 			//t.join();

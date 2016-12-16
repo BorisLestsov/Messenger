@@ -53,6 +53,6 @@ add_custom_target(_clean COMMAND rm -f CMakeCache.txt cmake_install.cmake
 						COMMAND rm -f Makefile
         CLION_EXE_DIR=${PROJECT_BINARY_DIR})
 
-target_link_libraries(Client ${Boost_LIBRARIES} Lib pthread boost_thread)
+target_link_libraries(Client ${Boost_LIBRARIES} Lib pthread boost_thread ncurses)
 target_link_libraries(Server ${Boost_LIBRARIES} Lib pthread boost_thread)
 target_link_libraries(Main ${Boost_LIBRARIES} Lib pthread boost_thread)
