@@ -19,17 +19,14 @@ namespace meow {
 		using boost::asio::ip::tcp;
 		
 		NetController::NetController(ClientModel* model)
-			:	model_(model),
+			:   model_(model),
                 socket_(nullptr),
                 self_thread_(nullptr),
+                 io_service_(),
                 msg_buf_()
-                // fields io_socket_ and write_msgs_ are constructed implicitly
+                // field write_msgs_ are constructed implicitly
 		{
-			//cout << "NetController constructor" << endl;
 			msg_buf_.resize(SerializedMessage::MAX_MSG_LENGTH);
-			//std::thread t([this]() {
-			//	io_service_.run();
-			//});
 		}
 		
 		void NetController::open_connection(char* address, char* port)
@@ -42,36 +39,31 @@ namespace meow {
 				delete socket_;
 			}
 			socket_ = new boost::asio::ip::tcp::socket(io_service_);
-			
-			self_thread_ = new std::thread([this]() {
-				try {
-					//cout << "before run" << endl;
-					io_service_.run();
-					//cout << "after run" << endl;
-				} catch (exception& e) {
-					cerr << e.what() << endl;
-				}
-			});
-			//cout << "thread created" << endl;
-			
+
 			auto connect_handler = [this](boost::system::error_code ec, tcp::resolver::iterator) {
                 if (!ec) {
                     do_read_header();
+                }
+                else {
+                    cout << "connection error" << endl;
                 }
             };
 
             boost::asio::async_connect(*socket_,
                                        endpoint_iterator,
                                        connect_handler);
-            //cout << "exiting" << endl;
+
+            self_thread_ = new std::thread([this]() {
+                io_service_.run();
+            });
 		}
 
-        void NetController::write(const Message &msg)
+        void NetController::write(const Message& msg)
         {
             auto write_f = [this, msg]() {
                 bool write_in_progress = !write_msgs_.empty();
 
-                write_msgs_.push_back(msg);
+                write_msgs_.push_back(msg.serialize());
 
                 if (!write_in_progress)
                     do_write();
@@ -92,8 +84,9 @@ namespace meow {
                 if (!ec) {
                     msg_buf_.decode_msg_length();
                     do_read_body();
-                } else
+                } else {
                     socket_->close();
+                }
             };
 
             boost::asio::async_read(*socket_,

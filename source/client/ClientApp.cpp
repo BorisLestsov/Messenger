@@ -21,15 +21,12 @@ namespace meow {
 		ClientApp::ClientApp()
 		{
 			model_ = new ClientModel();
-			cout << "Model created" << endl;
 			controller_ = new NetController(model_);
-			cout << "Controller created" << endl;
 			view_ = new NcursesView(controller_, model_);
 		}
 		
 		int ClientApp::main(int argc, char** argv)
 		{
-			cout << "opening connection..." << endl;
 			controller_->open_connection(argv[0], argv[1]);
 			
 			char line[Message::MAX_BODY_LENGTH + 1];
