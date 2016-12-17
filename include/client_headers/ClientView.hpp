@@ -16,6 +16,7 @@ namespace meow {
 
 		protected:
 			ClientView(NetController*, ClientModel*);
+            void send(const Message&);
 
 		private:
 			NetController* controller_;

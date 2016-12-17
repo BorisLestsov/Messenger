@@ -18,7 +18,7 @@ namespace meow {
 
 			~NetController();
 
-			void send(Message &msg);
+			void send(const Message &msg);
 			void open_connection(char* address, char* port);
 			void write(const Message& msg);
 			void close_connection();

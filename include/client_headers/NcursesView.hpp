@@ -1,17 +1,6 @@
 #ifndef _NCURSES_VIEW_HPP_INCLUDED
 #define _NCURSES_VIEW_HPP_INCLUDED
 
-
-#include <ncurses.h>
-// C++-style wrapper for ncurses utilities
-namespace ncurses {
-    using ::wgetch;   // note! ncurses::getch in a macrodefinition
-    using ::refresh;
-    using ::initscr;
-    using ::endwin;
-    using ::printw;
-}
-
 #include "ClientModel.hpp"
 #include "ClientView.hpp"
 #include "NetController.hpp"

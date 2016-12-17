@@ -58,6 +58,11 @@ namespace meow {
             });
 		}
 
+        void NetController::send(const Message& msg)
+        {
+            write(msg);
+        }
+
         void NetController::write(const Message& msg)
         {
             auto write_f = [this, msg]() {
