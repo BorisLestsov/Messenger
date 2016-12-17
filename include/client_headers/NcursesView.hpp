@@ -4,6 +4,8 @@
 #include "ClientModel.hpp"
 #include "ClientView.hpp"
 #include "NetController.hpp"
+#include "NcursesInputWindow.hpp"
+#include "lib_headers/ncurses-api.hpp"
 
 namespace meow {
 	namespace client {
@@ -19,6 +21,8 @@ namespace meow {
 
         private:
             void refresh();
+			ncurses::WINDOW* chat_win_;
+            NcursesInputWindow* inp_win_;
 
 		}; // class NcursesView
 

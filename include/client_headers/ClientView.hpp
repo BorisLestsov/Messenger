@@ -17,10 +17,10 @@ namespace meow {
 		protected:
 			ClientView(NetController*, ClientModel*);
             void send(const Message&);
+            ClientModel* model_;
 
 		private:
 			NetController* controller_;
-			ClientModel* model_;
 		}; // abstract class ClientView
 
 	}

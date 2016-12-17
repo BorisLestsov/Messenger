@@ -109,7 +109,8 @@ namespace meow {
 //                std::cout.write(msg_buf.get_body_buf(), msg_buf.get_body_len());
 //                std::cout << endl;
                     Message msg(msg_buf_);
-                    cout << msg;
+                    //cout << msg;
+                    model_->add_message(msg);
 
                     do_read_header();
                 } else

@@ -39,7 +39,7 @@ include_directories(${LIB_INCLUDE_DIR})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
-add_executable(Client ${CLIENT_SOURCE_FILES} source/client/ncurses-api.hpp.h)
+add_executable(Client ${CLIENT_SOURCE_FILES})
 add_executable(Server ${SERVER_SOURCE_FILES})
 
 set_target_properties( Server Client Main

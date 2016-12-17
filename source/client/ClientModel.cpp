@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "client_headers/ClientModel.hpp"
 
 namespace meow {
@@ -12,6 +14,17 @@ namespace meow {
 		{
 			observers_.push_front(observer);
 		}
+
+		void ClientModel::add_message(const Message& msg)
+        {
+            dialog_.push_back(msg);
+            notify_all();
+        }
+
+        deque<Message>* ClientModel::get_dialog()
+        {
+            return &dialog_;
+        }
 
         ClientModel::~ClientModel()
         {
