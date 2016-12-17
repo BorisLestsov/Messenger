@@ -13,11 +13,23 @@ namespace meow {
             NcursesInputWindow(int w, int h, int y0, int x0);
             ~NcursesInputWindow();
 
-            int  focus();
+            int  input();
+            void focus();
+            void reset();
             void refresh();
             std::string get_text();
         private:
             ncurses::WINDOW* self_;
+            // parameters of text area
+            int ncol_, nrow_;
+            int x0_, y0_;
+            // current cursor position
+            int x_, y_;
+            // editable text
+            std::string text_;
+
+            void clear();
+            void draw_text();
         };
 
     }

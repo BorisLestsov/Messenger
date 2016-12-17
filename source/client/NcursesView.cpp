@@ -59,16 +59,18 @@ namespace meow {
             //mvprintw(row-2,0,"This screen has %d rows and %d columns\n",row,col);
             //refresh();			/* Print it on to the real screen */
             while (true) {
-                int c = inp_win_->focus();
+                int c = inp_win_->input();
                 if (c == ncurses::KEY_CTRL_C)
                     return;
                 else if (c == '\n') {  // create Message and then send it!
-                    Message msg = Message(Message::MsgType::TEXT, "hello, world!", 42, 69, 100500);
+                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);
                     send(msg);
+                    inp_win_->reset(); // clear input text area
                 }
             }
         }
 
+        // draw messages from other clients of this chat
 		void NcursesView::update()
 		{
             deque<Message>* dialog = model_->get_dialog();
@@ -76,8 +78,10 @@ namespace meow {
                 mvwprintw(chat_win_, i+1, 2, "%s", dialog->at(i).get_msg_body().c_str());
             }
             wrefresh(chat_win_);
+            if (inp_win_)
+                inp_win_->focus();  // return focus to the input window
 		}
-			
+
 		NcursesView::~NcursesView()
 		{
             delete inp_win_;
