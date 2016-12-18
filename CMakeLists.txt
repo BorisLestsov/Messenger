@@ -35,7 +35,7 @@ include_directories(${INCLUDE_DIR})
 include_directories(${SERVER_INCLUDE_DIR})
 include_directories(${CLIENT_INCLUDE_DIR})
 include_directories(${LIB_INCLUDE_DIR})
-
+include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
