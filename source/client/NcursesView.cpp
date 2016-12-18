@@ -5,6 +5,7 @@
 #include "lib_headers/Message.hpp"
 #include "client_headers/ClientModel.hpp"
 #include "client_headers/ClientView.hpp"
+#include "client_headers/NcursesDialog.hpp"
 #include "client_headers/NcursesView.hpp"
 #include "client_headers/NetController.hpp"
 
@@ -30,7 +31,7 @@ namespace meow {
             ncurses::noecho();			    // controlled echoing
             getmaxyx(stdscr, row, col);
 
-            printw("size = %d x %d", row, col);
+            //printw("size = %d x %d", row, col);
             refresh();
 
             // create input subwindow
@@ -60,8 +61,10 @@ namespace meow {
             //refresh();			/* Print it on to the real screen */
             while (true) {
                 int c = inp_win_->input();
-                if (c == ncurses::KEY_CTRL_C)
+                if (c == ncurses::KEY_CTRL_C) {
+                    NcursesDialog("Are you sure you want to exit?").ask_user();
                     return;
+                }
                 else if (c == '\n') {  // create Message and then send it!
                     Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);
                     send(msg);

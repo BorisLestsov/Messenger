@@ -79,6 +79,7 @@ namespace meow {
 
         void NetController::close_connection()
         {
+            //self_thread_->join();
             io_service_.post([this]() { socket_->close(); });
         }
 
