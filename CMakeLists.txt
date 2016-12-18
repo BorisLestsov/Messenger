@@ -39,7 +39,7 @@ include_directories(${LIB_INCLUDE_DIR})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
-add_executable(Client ${CLIENT_SOURCE_FILES} source/client/NcursesDialog.cpp include/client_headers/NcursesDialog.hpp)
+add_executable(Client ${CLIENT_SOURCE_FILES} source/client/NcursesDialog.cpp include/client_headers/NcursesDialog.hpp source/client/NcursesTerminal.cpp include/client_headers/NcursesTerminal.hpp)
 add_executable(Server ${SERVER_SOURCE_FILES})
 
 set_target_properties( Server Client Main

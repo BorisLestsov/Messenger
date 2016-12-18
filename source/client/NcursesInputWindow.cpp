@@ -19,6 +19,7 @@ namespace meow {
                 text_("")
         {
             self_ = ncurses::newwin(h, w, y0, x0);
+            ncurses::keypad(self_, TRUE);
             // draw titled border
             box(self_, 0, 0);
             mvwprintw(self_, 0, 3, " Please, type message and press ENTER to send: ");
@@ -60,7 +61,7 @@ namespace meow {
                         }
                         wmove(self_, y_, x_);
                         break;
-                    /*case KEY_UP:
+                    case KEY_UP:
                         if (y_ == y0_)
                             return KEY_UP;
                         y_--;
@@ -70,7 +71,19 @@ namespace meow {
                         if (y_ != y0_ + nrow_)  // if not last row
                             y_++;
                         wmove(self_, y_, x_);
-                        break;*/
+                        break;
+                    case KEY_LEFT:
+                        if (x_ > x0_)
+                            x_--;
+                        wmove(self_, y_, x_);
+                        break;
+                    case KEY_RIGHT:
+                        if (x_ < x0_+ncol_)
+                            x_++;
+                        wmove(self_, y_, x_);
+                        break;
+                    case ncurses::KEY_ESC:
+                        return c;
                     case '\n':
                         // send message & reset input window
                         return '\n';

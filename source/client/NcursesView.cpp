@@ -39,7 +39,7 @@ namespace meow {
             // create input subwindow
             int height = 5;
             int width = col;
-            int starty = row-5;
+            int starty = row-6;
             int startx = 0;
             inp_win_ = new NcursesInputWindow(height, width, starty, startx);
             //ncurses::WINDOW* inp_win = newwin(height, width, starty, startx);
@@ -65,10 +65,8 @@ namespace meow {
                 int c = inp_win_->input();
                 if (c == ncurses::KEY_CTRL_C) {
                     NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
-                    if (ans == NcursesDialog::YES) {
-                        cout << "YES!!!" << endl;
+                    if (ans == NcursesDialog::YES)
                         return;
-                    }
                     refresh(); // ?
                     wrefresh(chat_win_);
                     inp_win_->refresh();
@@ -78,6 +76,10 @@ namespace meow {
                     Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);
                     send(msg);
                     inp_win_->reset(); // clear input text area
+                }
+                else if (c == ncurses::KEY_ESC) {
+                    // go to Vim-like console
+
                 }
             }
         }

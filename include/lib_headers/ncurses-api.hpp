@@ -3,7 +3,7 @@
 #ifndef _NCURSES_API_HPP_INCLUDED
 #define _NCURSES_API_HPP_INCLUDED
 
-#include <ncurses.h>
+#include <curses.h>
 
 namespace ncurses {
     using ::box;
@@ -32,11 +32,7 @@ namespace ncurses {
     const int KEY_CTRL_C = 3;
     const int KEY_NEWLINE = '\n';
     const int KEY_BACKSP = 127;
-    /*
-    const int KEY_ARROW_LEFT  = 37;
-    const int KEY_ARROW_UP    = 65;
-    const int KEY_ARROW_RIGHT = 39;
-    const int KEY_ARROW_DOWN  = 66;*/
+    const int KEY_ESC = 27;
 }
 
 
