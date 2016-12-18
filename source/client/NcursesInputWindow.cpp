@@ -31,7 +31,6 @@ namespace meow {
             wmove(self_, y0_, x0_);
             while (true) {
                 int c = ncurses::wgetch(self_);
-                int x, y;
                 Message msg;
 
                 switch (c) {

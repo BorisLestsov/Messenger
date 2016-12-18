@@ -4,6 +4,7 @@
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
 #include "client_headers/ClientModel.hpp"
+#include "client_headers/NcursesTerminal.hpp"
 #include "client_headers/ClientView.hpp"
 #include "client_headers/NcursesDialog.hpp"
 #include "client_headers/NcursesView.hpp"
@@ -59,6 +60,8 @@ namespace meow {
             mvwprintw(chat_win_, 0, col/2-3, " Chat ");
             wrefresh(chat_win_);
 
+            //terminal_ = new NcursesTerminal(row, col, 0, 0);
+
             //mvprintw(row-2,0,"This screen has %d rows and %d columns\n",row,col);
             //refresh();			/* Print it on to the real screen */
             while (true) {
@@ -99,6 +102,7 @@ namespace meow {
 		NcursesView::~NcursesView()
 		{
             delete inp_win_;
+            delete terminal_;
             ncurses::endwin();			/* End curses mode		  */
 		}
 

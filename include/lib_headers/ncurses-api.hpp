@@ -8,13 +8,16 @@
 namespace ncurses {
     using ::box;
     using ::cbreak;
+    using ::delwin;
     using ::echo;
     using ::endwin;
     using ::getmaxx;
     using ::getmaxy;
     using ::halfdelay;
+    using ::init_pair;
     using ::initscr;
     using ::keypad;
+    using ::mvwhline;
     using ::mvwprintw;
     using ::newwin;
     using ::noecho;
@@ -23,6 +26,9 @@ namespace ncurses {
     using ::refresh;
     using ::waddch;
     using ::waddstr;
+    using ::wattr_off;
+    using ::wattr_on;
+    using ::werase;
     using ::wgetch;   // note! ncurses::getch is a macrodefinition!
     using ::wprintw;
     using ::wrefresh;
