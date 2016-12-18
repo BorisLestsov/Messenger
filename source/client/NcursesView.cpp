@@ -29,6 +29,8 @@ namespace meow {
             ncurses::raw();				    // line buffering disabled
             ncurses::keypad(stdscr, TRUE);	// we get F1, F2 etc...
             ncurses::noecho();			    // controlled echoing
+            start_color();
+            use_default_colors();
             getmaxyx(stdscr, row, col);
 
             //printw("size = %d x %d", row, col);
@@ -62,8 +64,15 @@ namespace meow {
             while (true) {
                 int c = inp_win_->input();
                 if (c == ncurses::KEY_CTRL_C) {
-                    NcursesDialog("Are you sure you want to exit?").ask_user();
-                    return;
+                    NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
+                    if (ans == NcursesDialog::YES) {
+                        cout << "YES!!!" << endl;
+                        return;
+                    }
+                    refresh(); // ?
+                    wrefresh(chat_win_);
+                    inp_win_->refresh();
+                    update();
                 }
                 else if (c == '\n') {  // create Message and then send it!
                     Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);

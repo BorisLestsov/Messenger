@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 #include <string>
 
 #include "client_headers/NcursesDialog.hpp"
@@ -9,20 +10,21 @@ namespace meow {
 
         using std::string;
 
-        NcursesDialog::NcursesDialog(const string& text)
-        {
+        NcursesDialog::NcursesDialog(const string &text) {
             int maxy, maxx;
             getmaxyx(stdscr, maxy, maxx);
-            int w = (maxx >= 80) ? 60 : maxx-20;
+            int w = (maxx >= 80) ? 60 : maxx - 20;
             int h = 10;
-            int x0 = maxx/2 - w/2;
-            int y0 = maxy/2 - h/2;
+            int x0 = maxx / 2 - w / 2;
+            int y0 = maxy / 2 - h / 2;
             self_ = ncurses::newwin(h, w, y0, x0);
             height_ = h;
-            width_  = w;
+            width_ = w;
+
+            ncurses::keypad(self_, TRUE);
 
             // I want dialog windows to be colored and have bold font
-            start_color();
+            //start_color()
             init_pair(1, COLOR_YELLOW, COLOR_BLUE);
             wattron(self_, COLOR_PAIR(1));
             wattron(self_, A_BOLD);
@@ -30,7 +32,7 @@ namespace meow {
             // draw titled border and question text
             box(self_, 0, 0);
             fill_background();
-            mvwprintw(self_, 0, width_/2-1, " ? ");
+            mvwprintw(self_, 0, width_ / 2 - 1, " ? ");
             draw_string(text);
 
             // draw YES and NO buttons
@@ -44,25 +46,26 @@ namespace meow {
 
         NcursesDialog::~NcursesDialog()
         {
+
+            //init_pair(1, COLOR_WHITE, COLOR_BLACK);
+            //wattron(self_, COLOR_PAIR(1));
+            werase(self_);
+            wrefresh(self_);
             delwin(self_);
         }
 
         NcursesDialog::Answer NcursesDialog::ask_user() {
+            Answer ans = NO;
             while (true) {
                 int c = wgetch(self_);
-                Answer ans = YES;
-                if (c == 'k') {
-                    ans = YES;
-                    draw_buttons(YES);
-                }
-                else if (c == 'l') {
-                    ans = NO;
-                    draw_buttons(NO);
-                }
+                if (c == KEY_LEFT)
+                    draw_buttons(ans = YES);
+                else if (c == KEY_RIGHT)
+                    draw_buttons(ans = NO);
                 else if (c == '\n')
                     return ans;
                 else
-                    return NO;
+                    return NO;  // default
             }
         }
 
@@ -124,6 +127,7 @@ namespace meow {
 
             // select hovered button; cursor on the first letter
             wmove(self_, yes_y, onhover == YES ? yes_x+4 : no_x+5);
+            refresh();
         }
 
     }
