@@ -60,11 +60,12 @@ namespace meow {
             mvwprintw(chat_win_, 0, col/2-3, " Chat ");
             wrefresh(chat_win_);
 
-            //terminal_ = new NcursesTerminal(row, col, 0, 0);
+            terminal_ = new NcursesTerminal(row, col, 0, 0);
+            terminal_->input();
 
             //mvprintw(row-2,0,"This screen has %d rows and %d columns\n",row,col);
             //refresh();			/* Print it on to the real screen */
-            while (true) {
+            /*while (true) {
                 int c = inp_win_->input();
                 if (c == ncurses::KEY_CTRL_C) {
                     NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
@@ -84,7 +85,7 @@ namespace meow {
                     // go to Vim-like console
 
                 }
-            }
+            }*/
         }
 
         // draw messages from other clients of this chat
