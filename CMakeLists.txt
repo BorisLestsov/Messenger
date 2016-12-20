@@ -11,6 +11,7 @@ set(CLIENT_INCLUDE_DIR "${INCLUDE_DIR}/Client_headers")
 set(LIB_INCLUDE_DIR "${INCLUDE_DIR}/Lib_headers")
 
 
+set(Boost_USE_STATIC_LIBS ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
 find_package(Boost COMPONENTS system REQUIRED)
@@ -39,14 +40,19 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
-add_executable(Client ${CLIENT_SOURCE_FILES} source/client/NcursesDialog.cpp include/client_headers/NcursesDialog.hpp source/client/NcursesTerminal.cpp include/client_headers/NcursesTerminal.hpp)
+add_executable(Client ${CLIENT_SOURCE_FILES})
 add_executable(Server ${SERVER_SOURCE_FILES})
 
 set_target_properties( Server Client Main
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
         )
-
+set_target_properties( Lib
+		PROPERTIES
+		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+		ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+		)
+		
 add_custom_target(_clean COMMAND rm -f CMakeCache.txt cmake_install.cmake
 						COMMAND	rm -rf CMakeFiles/*
 						COMMAND	rmdir CMakeFiles
