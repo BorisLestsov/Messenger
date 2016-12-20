@@ -39,6 +39,12 @@ namespace ncurses {
     const int KEY_NEWLINE = '\n';
     const int KEY_BACKSP = 127;
     const int KEY_ESC = 27;
+
+    enum ColorPair {
+        GREEN_BLACK = 3,
+        WHITE_BLUE,
+        YELLOW_BLUE
+    };
 }
 
 

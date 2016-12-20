@@ -30,8 +30,14 @@ namespace meow {
             ncurses::raw();				    // line buffering disabled
             ncurses::keypad(stdscr, TRUE);	// we get F1, F2 etc...
             ncurses::noecho();			    // controlled echoing
+
+            // init ncurses color engine
             start_color();
             use_default_colors();
+            ncurses::init_pair(ncurses::ColorPair::GREEN_BLACK, COLOR_GREEN,  COLOR_BLACK);
+            ncurses::init_pair(ncurses::ColorPair::WHITE_BLUE,  COLOR_WHITE,  COLOR_BLUE);
+            ncurses::init_pair(ncurses::ColorPair::YELLOW_BLUE, COLOR_YELLOW, COLOR_BLUE);
+
             getmaxyx(stdscr, row, col);
 
             //printw("size = %d x %d", row, col);
