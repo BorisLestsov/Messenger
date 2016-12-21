@@ -11,7 +11,7 @@ namespace meow {
 
         using std::deque;
 
-        const int NcursesChat::INPUT_HEIGHT = 5; // two borders are included: 1+3+1=5
+        const int NcursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
 
         NcursesChat::NcursesChat(NetController* net, ClientModel* model,
                                  int height, int width, int starty, int startx)
@@ -19,11 +19,11 @@ namespace meow {
                 width_(width),
                 height_(height)
         {
-            model_->add_observer(this);
+            //model_->add_observer(this);
             self_ = newwin(height, width, startx, starty);
 
             // create start subwindow
-            starty = height-5;
+            starty = height - INPUT_HEIGHT;
             startx = 0;
             inp_win_ = new NcursesInputWindow(INPUT_HEIGHT, width, starty, startx);
 
@@ -46,13 +46,10 @@ namespace meow {
         {
             deque<Message>* dialog = model_->get_dialog();
             for (size_t i = 0; i < dialog->size(); i++) {
-                mvwprintw(out_win_, i+1, 2, "%s", dialog->at(i).get_msg_body().c_str());
+                mvwprintw(out_win_, i+1, 2, "%s %s", dialog->at(i).get_date("%H:%M:%S"), dialog->at(i).get_msg_body().c_str());
             }
             wrefresh(out_win_);
             inp_win_->refresh();
-            //wrefresh(chat_win_);
-            //if (inp_win_)
-            //inp_win_->focus();  // return focus to the start window
         }
 
         void NcursesChat::refresh()
@@ -74,9 +71,8 @@ namespace meow {
                     return;
                 }
                 else if (c == '\n') {  // create Message and then send it!
-                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);
+                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, time(nullptr));
                     send(msg);
-                    //std::cout << "send " << std::endl;
                     inp_win_->reset(); // clear start text area
                 }
             }
@@ -89,8 +85,14 @@ namespace meow {
         {
             werase(out_win_);
 
-            box(out_win_, 0 , 0);
-            mvwprintw(out_win_, 0, width_/2-3, " Chat ");
+            wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
+            wattron(out_win_, A_BOLD);
+            mvwhline(out_win_, 0, 0, ' ', width_);
+            mvwprintw(out_win_, 0, 0, " Chat");
+            string esc_tip = "ESC to exit chat";
+            mvwprintw(out_win_, 0, width_-esc_tip.length(), esc_tip.c_str());
+            wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
+            wattroff(out_win_, A_BOLD);
 
             wrefresh(out_win_);
         }

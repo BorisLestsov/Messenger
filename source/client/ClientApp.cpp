@@ -23,9 +23,9 @@ namespace meow {
 			model_ = new ClientModel();
 			controller_ = new NetController(model_);
 			view_ = new NcursesView(controller_, model_);
-            model_->add_observer(view_);
+            //model_->add_observer(view_);
 		}
-		
+
 		int ClientApp::main(int argc, char** argv)
 		{
 			controller_->open_connection(argv[0], argv[1]);

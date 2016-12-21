@@ -4,11 +4,12 @@
 #include <string>
 
 #include "lib_headers/ncurses-api.hpp"
+#include "client_headers/CursesComponent.hpp"
 
 namespace meow {
     namespace client {
 
-        class NcursesInputWindow {
+        class NcursesInputWindow : public CursesComponent {
         public:
             NcursesInputWindow(int w, int h, int y0, int x0);
             ~NcursesInputWindow();
@@ -19,7 +20,6 @@ namespace meow {
             void refresh();
             std::string get_text();
         private:
-            ncurses::WINDOW* self_;
             // parameters of text area
             int ncol_, nrow_;
             int x0_, y0_;

@@ -22,9 +22,8 @@ namespace meow {
 
         private:
             void refresh();
-			//ncurses::WINDOW* chat_win_;
+
 			NcursesTerminal* terminal_;
-            //NcursesInputWindow* inp_win_;
 		}; // class NcursesView
 
 	} // namespace client

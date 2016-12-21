@@ -79,6 +79,8 @@ namespace meow {
         MsgType get_msg_type() const;
         const string &get_msg_body() const;
 
+        string get_date(string format) const;
+
     private:
         MsgType msg_type_;
         uid_t uid_from_;

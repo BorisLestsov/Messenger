@@ -9,6 +9,7 @@ namespace meow {
 		ClientView::ClientView(NetController *controller, ClientModel *model)
 				: controller_(controller), model_(model)
 		{
+            model_->add_observer(this);
 		}
 
 		void ClientView::send(const Message& msg)

@@ -169,8 +169,18 @@ namespace meow {
         return msg_type_;
     }
 
-    const string &Message::get_msg_body() const {
+    const string& Message::get_msg_body() const {
         return msg_body_;
+    }
+
+    string Message::get_date(string format) const
+    {
+        static const char MAX_BUF = 80;
+        char buffer[MAX_BUF];
+
+        struct tm* timeinfo = localtime(&sending_date_);
+        strftime(buffer, MAX_BUF, format.c_str(), timeinfo);
+        return string(buffer);
     }
 
 

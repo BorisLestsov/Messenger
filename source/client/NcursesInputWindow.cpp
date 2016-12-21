@@ -13,16 +13,13 @@ namespace meow {
         using std::string;
 
         NcursesInputWindow::NcursesInputWindow(int h, int w, int y0, int x0)
-            :   x0_(1), y0_(1),          // upper left corner
-                ncol_(w-2), nrow_(h-2),  // text are size (in symbols)
+            :   CursesComponent(h, w, y0, x0),
+                x0_(0), y0_(1),          // upper left corner
+                ncol_(w), nrow_(h-1),    // text area size (in symbols)
                 x_(x0_), y_(y0_),        // cursor pointer to upper left corner
                 text_("")
         {
-            self_ = ncurses::newwin(h, w, y0, x0);
-            ncurses::keypad(self_, TRUE);
-            // draw titled border
-            box(self_, 0, 0);
-            mvwprintw(self_, 0, 3, " Please, type message and press ENTER to send: ");
+            ncurses::keypad(self_, TRUE);  // keyboard capture
             refresh();
         }
 
@@ -37,39 +34,23 @@ namespace meow {
                     case ncurses::KEY_CTRL_C:
                         return c;
                     case ncurses::KEY_BACKSP: // remove 1 char
-                        /*getyx(self_, y, x);
-                        if (x != 1) {
-                            mvwaddch(self_, y, x - 1, ' ');  // remove previous symbol
-                            wmove(self_, y, x - 1);
-                        }*/
                         // if no symbols in the start window
                         if (x_ == x0_ && y_ == y0_)
                             ;
                         else {
-                            int at = (y_-1)*ncol_ + (x_-1) - 1;
+                            int at = (y_-y0_)*ncol_ + x_ - 1;
                             text_.erase(at, 1);
-                            draw_text();
+
                             if (x_ > x0_)
                                 x_--;
-                            else if (y_ == y0_)
+                            else if (y_ == y0_)  // cursor at (x0_,y0_)
                                 ;
                             else {  // rm first char in line
                                 x_ = x0_ + ncol_ - 1;
                                 y_--;
                             }
                         }
-                        wmove(self_, y_, x_);
-                        break;
-                    case KEY_UP:
-                        if (y_ == y0_)
-                            return KEY_UP;
-                        y_--;
-                        wmove(self_, y_, x_);
-                        break;
-                    case KEY_DOWN:
-                        if (y_ != y0_ + nrow_)  // if not last row
-                            y_++;
-                        wmove(self_, y_, x_);
+                        refresh();
                         break;
                     case KEY_LEFT:
                         if (x_ > x0_)
@@ -77,10 +58,13 @@ namespace meow {
                         wmove(self_, y_, x_);
                         break;
                     case KEY_RIGHT:
-                        if (x_ < x0_+ncol_)
+                        if (x_ < x0_+text_.length())
                             x_++;
                         wmove(self_, y_, x_);
                         break;
+                    case KEY_DOWN:
+                    case KEY_UP:
+                        return c;
                     case ncurses::KEY_ESC:
                         return c;
                     case '\n':
@@ -90,7 +74,7 @@ namespace meow {
                         // no more text than nrow_ lines is allowed now!
                         if (y_ >= y0_+nrow_)
                             break;
-                        int at = (y_-1)*ncol_ + (x_-1);
+                        int at = (y_-y0_)*ncol_ + x_;
                         text_.insert(at, 1, c);
                         draw_text();
                         if (x_ < ncol_)
@@ -101,20 +85,16 @@ namespace meow {
                         }
                         wmove(self_, y_, x_);
                         break;
-                        //wprintw(inp_win, "%d", c);
                 }
             }
         }
 
         void NcursesInputWindow::reset()
         {
-            //clear();
             text_ = "";
             x_ = x0_;
             y_ = y0_;
             refresh();
-            //wmove(self_, y_, x_);
-            //refresh();
         }
 
         void NcursesInputWindow::focus()
@@ -130,9 +110,17 @@ namespace meow {
 
         void NcursesInputWindow::refresh()
         {
+            int width = ncol_ + 2;
             werase(self_);
-            box(self_, 0, 0);
-            mvwprintw(self_, 0, 3, " Please, type message and press ENTER to send: ");
+
+            // blue header
+            wattron(self_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
+            wattron(self_, A_BOLD);
+            mvwhline(self_, 0, 0, ' ', width);
+            mvwprintw(self_, 0, 0, " Please, type message and press ENTER to send: ");
+            wattroff(self_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
+            wattroff(self_, A_BOLD);
+
             draw_text();
             wmove(self_, y_, x_);
             wrefresh(self_);
@@ -140,18 +128,15 @@ namespace meow {
 
         NcursesInputWindow::~NcursesInputWindow()
         {
-            delwin(self_);
         }
 
         // private methods
 
         void NcursesInputWindow::draw_text()
         {
-            //werase(self_);
             for (size_t i = 0; i < text_.length(); i += ncol_) {
-                mvwprintw(self_, i/ncol_+1, x0_, "%s", text_.substr(i, ncol_).c_str());
+                mvwprintw(self_, y0_+i/ncol_, x0_, "%s", text_.substr(i, ncol_).c_str());
             }
-            //refresh();
         }
 
     } // namespace meow::client

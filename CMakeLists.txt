@@ -40,7 +40,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
-add_executable(Client ${CLIENT_SOURCE_FILES} source/client/NcursesChat.cpp include/client_headers/NcursesChat.hpp)
+add_executable(Client ${CLIENT_SOURCE_FILES} source/client/NcursesChat.cpp include/client_headers/NcursesChat.hpp include/client_headers/CursesComponent.hpp source/client/CursesComponent.cpp)
 add_executable(Server ${SERVER_SOURCE_FILES})
 
 set_target_properties( Server Client Main

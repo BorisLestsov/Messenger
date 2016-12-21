@@ -54,7 +54,7 @@ namespace meow {
                     "| | | | | ||  __/| (_) |\\ V  V / \n"
                     "|_| |_| |_| \\___| \\___/  \\_/\\_/  \n\n";
             string short_info = string("Meow Messenger v0.2 build ") + __DATE__ + __TIME__ + "\n";
-            out_buf_.push_front(output_line(logo + short_info));
+            out_buf_.push_front(output_line(short_info));
 
             this->refresh();
         }
