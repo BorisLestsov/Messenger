@@ -1,8 +1,8 @@
 #include <set>
 
-#include "Participant.hpp"
-#include "Message.hpp"
-#include "Chatroom.hpp"
+#include "server_headers/Participant.hpp"
+#include "lib_headers/Message.hpp"
+#include "server_headers/Chatroom.hpp"
 
 namespace meow {
     namespace server {

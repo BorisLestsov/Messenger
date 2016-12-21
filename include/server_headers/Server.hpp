@@ -6,7 +6,7 @@
 #include "Participant.hpp"
 #include "Session.hpp"
 #include "Chatroom.hpp"
-#include "Message.hpp"
+#include "lib_headers/Message.hpp"
 
 namespace meow {
     namespace server {

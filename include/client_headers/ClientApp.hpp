@@ -15,13 +15,15 @@ namespace meow {
 			static const int QT_APP;
 
 			ClientApp();
+			
+			int main(int argc, char** argv);
 
 			~ClientApp();
 
 		private:
-			NetController *controller;
-			ClientModel *model;
-			ClientView *view;
+			NetController *controller_;
+			ClientModel *model_;
+			ClientView *view_;
 		}; // class ClientApp
 
 	}

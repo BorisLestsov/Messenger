@@ -9,11 +9,11 @@
 #include <utility>
 #include <boost/asio.hpp>
 
-#include "Participant.hpp"
-#include "Session.hpp"
-#include "Chatroom.hpp"
-#include "Message.hpp"
-#include "Server.hpp"
+#include "server_headers/Participant.hpp"
+#include "server_headers/Session.hpp"
+#include "server_headers/Chatroom.hpp"
+#include "lib_headers/Message.hpp"
+#include "server_headers/Server.hpp"
 
 #define MAX_CMD_LEN 256
 
