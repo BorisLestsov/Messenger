@@ -8,9 +8,10 @@
 namespace meow {
 	namespace client {
 
-		class ClientView : public Observer {
+		class ClientUI :
+				public Observer {
 		public:
-			virtual ~ClientView();
+			virtual ~ClientUI();
 			virtual void start() = 0;
 			virtual void update() = 0;
 
@@ -18,23 +19,23 @@ namespace meow {
 			NetController* get_controller();
 
 		protected:
-			ClientView(NetController*, ClientModel*);
+			ClientUI(NetController*, ClientModel*);
             void send(const Message&);
             ClientModel* model_;
 
 		private:
 			NetController* controller_;
-		}; // abstract class ClientView
+		}; // abstract class ClientUI
 
 
         // inline methods
 
-        inline ClientModel* ClientView::get_model()
+        inline ClientModel* ClientUI::get_model()
         {
             return model_;
         }
 
-        inline NetController* ClientView::get_controller()
+        inline NetController* ClientUI::get_controller()
         {
             return controller_;
         }

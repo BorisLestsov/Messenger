@@ -148,8 +148,7 @@ namespace meow {
         }
 
 		NetController::~NetController()
-		{
-		}
+		{}
 
 	}
 } // namespace meow

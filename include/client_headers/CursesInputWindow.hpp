@@ -9,10 +9,10 @@
 namespace meow {
     namespace client {
 
-        class NcursesInputWindow : public CursesComponent {
+        class CursesInputWindow : public CursesComponent {
         public:
-            NcursesInputWindow(int w, int h, int y0, int x0);
-            ~NcursesInputWindow();
+            CursesInputWindow(int w, int h, int y0, int x0);
+            ~CursesInputWindow();
 
             int  input();
             void focus();

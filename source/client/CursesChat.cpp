@@ -3,19 +3,19 @@
 
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
-#include "client_headers/NcursesChat.hpp"
-#include "client_headers/NcursesDialog.hpp"
+#include "client_headers/CursesChat.hpp"
+#include "client_headers/CursesDialog.hpp"
 
 namespace meow {
     namespace client {
 
         using std::deque;
 
-        const int NcursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
+        const int CursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
 
-        NcursesChat::NcursesChat(NetController* net, ClientModel* model,
+        CursesChat::CursesChat(NetController* net, ClientModel* model,
                                  int height, int width, int starty, int startx)
-            :   ClientView(net, model),
+            :   ClientUI(net, model),
                 width_(width),
                 height_(height)
         {
@@ -25,7 +25,7 @@ namespace meow {
             // create start subwindow
             starty = height - INPUT_HEIGHT;
             startx = 0;
-            inp_win_ = new NcursesInputWindow(INPUT_HEIGHT, width, starty, startx);
+            inp_win_ = new CursesInputWindow(INPUT_HEIGHT, width, starty, startx);
 
             // create subwindow for received messages
             starty = 0;
@@ -36,32 +36,32 @@ namespace meow {
             //this->refresh();
         }
 
-        NcursesChat::~NcursesChat()
+        CursesChat::~CursesChat()
         {
             delete inp_win_;
             delwin(out_win_);
             delwin(self_);
         }
 
-        void NcursesChat::update()
+        void CursesChat::update()
         {
             draw_msg_list();
             inp_win_->refresh();
         }
 
-        void NcursesChat::refresh()
+        void CursesChat::refresh()
         {
             draw_msg_list();
             inp_win_->refresh();
         }
 
-        void NcursesChat::start()
+        void CursesChat::start()
         {
             int c;
             while ((c = inp_win_->input()) != ncurses::KEY_ESC) {
                 if (c == ncurses::KEY_CTRL_C) {
-                    /*NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
-                    if (ans == NcursesDialog::YES)
+                    /*CursesDialog::Answer ans = CursesDialog("Are you sure you want to exit?").ask_user();
+                    if (ans == CursesDialog::YES)
                         return;
                     refresh();*/
                     return;
@@ -77,7 +77,7 @@ namespace meow {
 
         // private methods
 
-        void NcursesChat::draw_msg_list()
+        void CursesChat::draw_msg_list()
         {
             werase(out_win_);
 

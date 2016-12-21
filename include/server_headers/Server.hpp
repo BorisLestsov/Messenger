@@ -2,6 +2,7 @@
 #define _SERVER_HPP_INCLUDED
 
 #include <boost/asio.hpp>
+#include <vector>
 
 #include "Participant.hpp"
 #include "Session.hpp"
@@ -12,20 +13,25 @@ namespace meow {
     namespace server {
 
         using boost::asio::ip::tcp;
+        using std::vector;
 
         class Chatroom;
 
         class Server {
         public:
-            Server(boost::asio::io_service &io_service, const tcp::endpoint &endpoint);
+            Server(boost::asio::io_service& io_service, const tcp::endpoint &endpoint);
 
-            size_t n_opened() const;  // number of clients
+            size_t n_rooms() const;  // number of clients
+            void list_rooms() const;  // number of clients
+            size_t n_in_room() const;
+            void list_room() const;
+
         private:
             void do_accept();
 
             tcp::acceptor acceptor_;
-            tcp::socket socket_;
-            Chatroom room_;
+            tcp::socket server_socket_;
+            vector<Chatroom> rooms_;
         };
 
     }

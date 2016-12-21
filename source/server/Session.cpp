@@ -10,10 +10,11 @@ namespace meow {
 
 		using boost::asio::ip::tcp;
 
-		Session::Session(tcp::socket socket, Chatroom &room)
-				: socket_(std::move(socket)),
-				  room_(room),
-				  msg_buf_() {
+		Session::Session(Chatroom &room):
+                socket_(std::move(*room.get_chatroom_socket())),
+				room_(room),
+				msg_buf_()
+		{
 			msg_buf_.resize(SerializedMessage::MAX_MSG_LENGTH);
 		}
 
@@ -33,12 +34,12 @@ namespace meow {
 		void Session::do_read_header() {
 			auto self(shared_from_this());
 
-			auto read_header_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
-				if (!ec) {
+			auto read_header_f = [this, self](boost::system::error_code error_code, std::size_t /*length*/) {
+				if (!error_code) {
 					msg_buf_.decode_msg_length();
 					do_read_body();
 				} else {
-					std::cout << "ec in session::do_read_header" << endl;
+					std::cout << "error code in session::do_read_header" << endl;
 					room_.leave(shared_from_this());
 				}
 			};
@@ -52,13 +53,13 @@ namespace meow {
 
 		void Session::do_read_body() {
 			auto self(shared_from_this());
-			auto read_body_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
-				if (!ec) {
+			auto read_body_f = [this, self](boost::system::error_code error_code, std::size_t /*length*/) {
+				if (!error_code) {
 					Message msg(msg_buf_);
 					room_.deliver(msg);
 					do_read_header();
 				} else {
-					std::cout << "ec in session::do_read_body" << endl;
+					std::cout << "error code in session::do_read_body" << endl;
 					room_.leave(shared_from_this());
 				}
 			};
@@ -73,13 +74,13 @@ namespace meow {
 		void Session::do_write() {
 			auto self(shared_from_this());
 
-			auto write_f = [this, self](boost::system::error_code ec, std::size_t /*length*/) {
-				if (!ec) {
+			auto write_f = [this, self](boost::system::error_code error_code, std::size_t /*length*/) {
+				if (!error_code) {
 					write_msgs_.pop_front();
 					if (!write_msgs_.empty())
 						do_write();
 				} else {
-					std::cout << "ec in session::do_write" << endl;
+					std::cout << "error code in session::do_write" << endl;
 					room_.leave(shared_from_this());
 				}
 			};

@@ -5,15 +5,15 @@
 
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
-#include "client_headers/NcursesInputWindow.hpp"
-#include "client_headers/ClientView.hpp"
+#include "client_headers/CursesInputWindow.hpp"
+#include "client_headers/ClientUI.hpp"
 
 namespace meow {
     namespace client {
-        class NcursesChat : public ClientView {
+        class CursesChat : public ClientUI {
         public:
-            NcursesChat(NetController* net, ClientModel* model, int height, int width, int starty, int startx);
-            ~NcursesChat();
+            CursesChat(NetController* net, ClientModel* model, int height, int width, int starty, int startx);
+            ~CursesChat();
 
             int get_width() const;
             int get_height() const;
@@ -26,19 +26,19 @@ namespace meow {
 
             ncurses::WINDOW* self_;
             ncurses::WINDOW* out_win_;
-            NcursesInputWindow* inp_win_;
+            CursesInputWindow* inp_win_;
             int width_;
             int height_;
 
             void draw_msg_list();
-        }; // class NcursesChat
+        }; // class CursesChat
 
-        inline int NcursesChat::get_width() const
+        inline int CursesChat::get_width() const
         {
             return width_;
         }
 
-        inline int NcursesChat::get_height() const
+        inline int CursesChat::get_height() const
         {
             return height_;
         }

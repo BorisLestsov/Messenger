@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "client_headers/NcursesInputWindow.hpp"
+#include "client_headers/CursesInputWindow.hpp"
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
 
@@ -12,7 +12,7 @@ namespace meow {
         using std::endl;
         using std::string;
 
-        NcursesInputWindow::NcursesInputWindow(int h, int w, int y0, int x0)
+        CursesInputWindow::CursesInputWindow(int h, int w, int y0, int x0)
             :   CursesComponent(h, w, y0, x0),
                 x0_(0), y0_(1),          // upper left corner
                 ncol_(w), nrow_(h-1),    // text area size (in symbols)
@@ -23,7 +23,7 @@ namespace meow {
             refresh();
         }
 
-        int NcursesInputWindow::input()
+        int CursesInputWindow::input()
         {
             wmove(self_, y0_, x0_);
             while (true) {
@@ -89,7 +89,7 @@ namespace meow {
             }
         }
 
-        void NcursesInputWindow::reset()
+        void CursesInputWindow::reset()
         {
             text_ = "";
             x_ = x0_;
@@ -97,18 +97,18 @@ namespace meow {
             refresh();
         }
 
-        void NcursesInputWindow::focus()
+        void CursesInputWindow::focus()
         {
             wmove(self_, y_, x_);
             refresh();
         }
 
-        string NcursesInputWindow::get_text()
+        string CursesInputWindow::get_text()
         {
             return text_;
         }
 
-        void NcursesInputWindow::refresh()
+        void CursesInputWindow::refresh()
         {
             int width = ncol_ + 2;
             werase(self_);
@@ -126,13 +126,13 @@ namespace meow {
             wrefresh(self_);
         }
 
-        NcursesInputWindow::~NcursesInputWindow()
+        CursesInputWindow::~CursesInputWindow()
         {
         }
 
         // private methods
 
-        void NcursesInputWindow::draw_text()
+        void CursesInputWindow::draw_text()
         {
             for (size_t i = 0; i < text_.length(); i += ncol_) {
                 mvwprintw(self_, y0_+i/ncol_, x0_, "%s", text_.substr(i, ncol_).c_str());

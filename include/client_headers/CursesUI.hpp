@@ -2,29 +2,29 @@
 #define _NCURSES_VIEW_HPP_INCLUDED
 
 #include "ClientModel.hpp"
-#include "ClientView.hpp"
+#include "ClientUI.hpp"
 #include "NetController.hpp"
-#include "NcursesInputWindow.hpp"
-#include "NcursesTerminal.hpp"
+#include "CursesInputWindow.hpp"
+#include "CursesTerminal.hpp"
 #include "lib_headers/ncurses-api.hpp"
 
 namespace meow {
 	namespace client {
 
-		class NcursesView : public ClientView {
+		class CursesUI : public ClientUI {
 		public:
-			NcursesView(NetController*, ClientModel*);
+			CursesUI(NetController*, ClientModel*);
 
 			void start();
 			void update();
 
-			~NcursesView();
+			~CursesUI();
 
         private:
             void refresh();
 
-			NcursesTerminal* terminal_;
-		}; // class NcursesView
+			CursesTerminal* terminal_;
+		}; // class CursesUI
 
 	} // namespace client
 } // namespace meow

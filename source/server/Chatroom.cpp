@@ -7,6 +7,13 @@
 namespace meow {
     namespace server {
 
+        const uint Chatroom::max_recent_msgs = MAX_RECENT_MESSAGES;
+
+        Chatroom::Chatroom(boost::asio::io_service &io_service):
+                chatroom_socket_(io_service)
+        {}
+
+
         void Chatroom::join(chat_participant_ptr participant) {
             participants_.insert(participant);
             for (auto msg: recent_msgs_)
@@ -28,6 +35,10 @@ namespace meow {
 
         size_t Chatroom::size() const {
             return participants_.size();
+        }
+
+        tcp::socket* Chatroom::get_chatroom_socket() {
+            return &chatroom_socket_;
         }
 
     }

@@ -5,10 +5,10 @@
 #include <vector>
 
 #include "lib_headers/ncurses-api.hpp"
-#include "client_headers/NcursesChat.hpp"
-#include "client_headers/NcursesDialog.hpp"
-#include "client_headers/NcursesTerminal.hpp"
-#include "client_headers/NcursesView.hpp"
+#include "client_headers/CursesChat.hpp"
+#include "client_headers/CursesDialog.hpp"
+#include "client_headers/CursesTerminal.hpp"
+#include "client_headers/CursesUI.hpp"
 
 namespace meow {
     namespace client {
@@ -17,16 +17,16 @@ namespace meow {
         using std::string;
         using std::vector;
 
-        const int NcursesTerminal::TIME_COL_WIDTH = 12;
+        const int CursesTerminal::TIME_COL_WIDTH = 12;
 
         // class output_line helps to associate terminal output with current time
-        NcursesTerminal::output_line::output_line(const string& s)
+        CursesTerminal::output_line::output_line(const string& s)
             :   text_(s)
         {
             time(&time_);
         }
 
-        string NcursesTerminal::output_line::date_to_s()
+        string CursesTerminal::output_line::date_to_s()
         {
             static const char MAX_BUF = 80;
             char buffer[MAX_BUF];
@@ -36,9 +36,9 @@ namespace meow {
             return string(buffer);
         }
 
-        // class NcursesTerminal
+        // class CursesTerminal
 
-        NcursesTerminal::NcursesTerminal(ClientView* parent, int height, int width, int starty, int startx)
+        CursesTerminal::CursesTerminal(ClientUI* parent, int height, int width, int starty, int startx)
             :   parent_(parent),
                 width_(width),
                 height_(height),
@@ -59,12 +59,12 @@ namespace meow {
             this->refresh();
         }
 
-        NcursesTerminal::~NcursesTerminal()
+        CursesTerminal::~CursesTerminal()
         {
             delwin(self_);
         }
 
-        void NcursesTerminal::refresh()
+        void CursesTerminal::refresh()
         {
             int x0 = 0, y0 = 0;
 
@@ -91,11 +91,11 @@ namespace meow {
             ncurses::wrefresh(self_);
         }
 
-        void NcursesTerminal::input()
+        void CursesTerminal::input()
         {
             string cmd;
             int retval;
-            NcursesDialog::Answer ans;
+            CursesDialog::Answer ans;
 
             while (true) {
                 int c = wgetch(self_);
@@ -103,8 +103,8 @@ namespace meow {
                     case '\n':  // execute command
                         retval = exec(cmd);
                         if (retval == 1) { // fatal error or exit code
-                            ans = NcursesDialog("Are you sure you want to exit?").ask_user();
-                            if (ans == NcursesDialog::YES)
+                            ans = CursesDialog("Are you sure you want to exit?").ask_user();
+                            if (ans == CursesDialog::YES)
                                 return;
                         }
                         // draw_input_line("");
@@ -121,8 +121,8 @@ namespace meow {
                         }
                         break;
                     case ncurses::KEY_CTRL_C:
-                        ans = NcursesDialog("Are you sure you want to exit?").ask_user();
-                        if (ans == NcursesDialog::YES)
+                        ans = CursesDialog("Are you sure you want to exit?").ask_user();
+                        if (ans == CursesDialog::YES)
                             return;
                         refresh();
                         break;
@@ -137,7 +137,7 @@ namespace meow {
             }
         }
 
-        int NcursesTerminal::exec(const string& cmd)
+        int CursesTerminal::exec(const string& cmd)
         {
             if (cmd == "")
                 out_buf_.push_front(output_line(""));
@@ -166,7 +166,7 @@ namespace meow {
                 refresh();
             }
             else if (cmd == "chat") {
-                NcursesChat(parent_->get_controller(), parent_->get_model(),height_, width_, 0, 0)
+                CursesChat(parent_->get_controller(), parent_->get_model(),height_, width_, 0, 0)
                         .start();
             }
             else if (cmd == "quit" || cmd == "exit")
@@ -179,13 +179,13 @@ namespace meow {
             return 0;
         }
 
-        void NcursesTerminal::draw_input_line(const std::string& text)
+        void CursesTerminal::draw_input_line(const std::string& text)
         {
             mvwhline(self_, height_-1, 0, ' ', width_);
             mvwprintw(self_, height_-1, 0, "> %s", text.c_str());
         }
 
-        void NcursesTerminal::draw_output_panel()
+        void CursesTerminal::draw_output_panel()
         {
             // 1. clear area
             for (int i = 1; i < height_-2; i++)

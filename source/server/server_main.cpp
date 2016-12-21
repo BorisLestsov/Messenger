@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 			else if (cmdline == "stats") {
-				cout << "Connections opened: " << server.n_opened() << endl;
+				cout << "Connections opened: " << server.n_rooms() << endl;
 			}
 			else if (cmdline == "help" || cmdline == "?")
 				show_help();

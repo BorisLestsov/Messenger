@@ -4,15 +4,15 @@
 #include <deque>
 
 #include "lib_headers/ncurses-api.hpp"
-#include "client_headers/ClientView.hpp"
+#include "client_headers/ClientUI.hpp"
 
 namespace meow {
     namespace client {
 
-        class NcursesTerminal {
+        class CursesTerminal {
         public:
-            NcursesTerminal(ClientView* parent, int height, int width, int starty, int startx);
-            ~NcursesTerminal();
+            CursesTerminal(ClientUI* parent, int height, int width, int starty, int startx);
+            ~CursesTerminal();
 
             int get_width() const;
             int get_height() const;
@@ -31,7 +31,7 @@ namespace meow {
                 std::string date_to_s();
             };
 
-            ClientView* parent_;
+            ClientUI* parent_;
             ncurses::WINDOW* self_;
             int width_;
             int height_;
@@ -41,14 +41,14 @@ namespace meow {
             int exec(const std::string &);
             void draw_input_line(const std::string& text);
             void draw_output_panel();
-        }; // class NcursesTerminal
+        }; // class CursesTerminal
 
-        inline int NcursesTerminal::get_width() const
+        inline int CursesTerminal::get_width() const
         {
             return width_;
         }
 
-        inline int NcursesTerminal::get_height() const
+        inline int CursesTerminal::get_height() const
         {
             return height_;
         }

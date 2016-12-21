@@ -16,7 +16,7 @@ namespace meow {
 				: public Participant,
 				  public std::enable_shared_from_this<Session> {
 		public:
-			Session(tcp::socket socket, Chatroom &room);
+			Session(Chatroom &room);
 
 			void start();
 

@@ -7,22 +7,30 @@ namespace meow {
 
         using boost::asio::ip::tcp;
 
-        Server::Server(boost::asio::io_service &io_service, const tcp::endpoint &endpoint) :
+        Server::Server(boost::asio::io_service& io_service, const tcp::endpoint &endpoint) :
                 acceptor_(io_service, endpoint),
-                socket_(io_service) {
+                server_socket_(io_service),
+                rooms_()
+        {
+            rooms_.push_back(Chatroom(io_service));
             do_accept();
         }
 
-        size_t Server::n_opened() const {
-            return room_.size();
+        size_t Server::n_rooms() const {
+            return rooms_.size();
         }
 
         void Server::do_accept() {
-            acceptor_.async_accept(socket_, [this](boost::system::error_code ec) {
-                if (!ec)
-                    std::make_shared<Session>(std::move(socket_), room_)->start();
+            auto acceptor_f = [this](boost::system::error_code error_code) {
+                if (!error_code)
+                    std::make_shared<Session>(rooms_.back())->start();
+                else
+                    cerr << "Error Code in do_accept" << endl;
                 do_accept();
-            });
+            };
+
+            // Connect to last and only chatroom for now
+            acceptor_.async_accept(*(rooms_.back().get_chatroom_socket()), acceptor_f);
         }
 
     }
