@@ -43,7 +43,9 @@ namespace ncurses {
     enum ColorPair {
         GREEN_BLACK = 3,
         WHITE_BLUE,
-        YELLOW_BLUE
+        YELLOW_BLUE,
+        RED_BLACK,
+        BLUE_BLACK
     };
 }
 

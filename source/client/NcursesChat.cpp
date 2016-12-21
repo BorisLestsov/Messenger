@@ -32,7 +32,8 @@ namespace meow {
             startx = 0;
             out_win_ = newwin(height-INPUT_HEIGHT, width, starty, startx);
 
-            this->refresh();
+            update();
+            //this->refresh();
         }
 
         NcursesChat::~NcursesChat()
@@ -44,11 +45,7 @@ namespace meow {
 
         void NcursesChat::update()
         {
-            deque<Message>* dialog = model_->get_dialog();
-            for (size_t i = 0; i < dialog->size(); i++) {
-                mvwprintw(out_win_, i+1, 2, "%s %s", dialog->at(i).get_date("%H:%M:%S"), dialog->at(i).get_msg_body().c_str());
-            }
-            wrefresh(out_win_);
+            draw_msg_list();
             inp_win_->refresh();
         }
 
@@ -67,7 +64,6 @@ namespace meow {
                     if (ans == NcursesDialog::YES)
                         return;
                     refresh();*/
-                    //update();
                     return;
                 }
                 else if (c == '\n') {  // create Message and then send it!
@@ -85,6 +81,7 @@ namespace meow {
         {
             werase(out_win_);
 
+            // blue header line
             wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
             wattron(out_win_, A_BOLD);
             mvwhline(out_win_, 0, 0, ' ', width_);
@@ -93,6 +90,48 @@ namespace meow {
             mvwprintw(out_win_, 0, width_-esc_tip.length(), esc_tip.c_str());
             wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::WHITE_BLUE));
             wattroff(out_win_, A_BOLD);
+
+            // draw messages
+            deque<Message>* dialog = model_->get_dialog();
+            const int left_width = 12;
+            /*for (size_t i = 0; i < dialog->size(); i++) {
+                const char* d = dialog->at(i).get_date("%H:%M:%S").c_str();
+                mvwprintw(out_win_, i+1, 0, "%s  %s", d, dialog->at(i).get_msg_body().c_str());
+            }*/
+            int max_len_line = width_-left_width-2;
+            int y = height_-4;
+            for (auto i = dialog->rbegin(); i != dialog->rend() && y >= 1; i++) {
+                string s = i->get_msg_body();
+                vector<string> substrs;
+                substrs.push_back("");
+                for (auto ci = 0; ci < s.length(); ci++) {
+                    auto c = s[ci];
+                    if (c == '\n') {
+                        substrs.push_back("");
+                        continue;
+                    }
+                    if (substrs.back().length() == max_len_line)
+                        substrs.push_back("");
+                    substrs.back() += c;
+                }
+                // draw substrings in reverse order
+                for (auto j = substrs.rbegin(); j != substrs.rend() && y >= 1; j++) {
+                    mvwprintw(out_win_, y, left_width + 1, j->c_str());
+                    y--;
+                }
+
+                // draw time of current output line
+                if (y >= 0) {
+                    wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
+                    mvwprintw(out_win_, y + 1, 1, i->get_date("%H:%M:%S").c_str());
+                    wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
+                }
+            }
+
+            // vertical separator
+            wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
+            mvwvline(out_win_, 1, left_width-1, ACS_VLINE, height_-3);
+            wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
 
             wrefresh(out_win_);
         }

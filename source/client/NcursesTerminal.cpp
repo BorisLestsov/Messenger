@@ -121,12 +121,11 @@ namespace meow {
                         }
                         break;
                     case ncurses::KEY_CTRL_C:
-                        /*ans = NcursesDialog("Are you sure you want to exit?").ask_user();
+                        ans = NcursesDialog("Are you sure you want to exit?").ask_user();
                         if (ans == NcursesDialog::YES)
                             return;
                         refresh();
-                        break;*/
-                        return;
+                        break;
                     default:
                         if (pos_ >= width_)  // too many chars in start line
                             break;

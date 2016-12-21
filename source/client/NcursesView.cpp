@@ -33,6 +33,8 @@ namespace meow {
             ncurses::init_pair(ncurses::ColorPair::GREEN_BLACK, COLOR_GREEN, COLOR_BLACK);
             ncurses::init_pair(ncurses::ColorPair::WHITE_BLUE, COLOR_WHITE, COLOR_BLUE);
             ncurses::init_pair(ncurses::ColorPair::YELLOW_BLUE, COLOR_YELLOW, COLOR_BLUE);
+            ncurses::init_pair(ncurses::ColorPair::RED_BLACK, COLOR_RED, COLOR_BLACK);
+            ncurses::init_pair(ncurses::ColorPair::BLUE_BLACK, COLOR_BLUE, COLOR_BLACK);
 
             getmaxyx(stdscr, row, col);
 
