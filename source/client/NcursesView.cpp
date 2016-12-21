@@ -18,8 +18,8 @@ namespace meow {
 		NcursesView::NcursesView(NetController* netctl, ClientModel* model)
 			:	ClientView(netctl, model)
 		{
-            chat_win_ = nullptr;
-            inp_win_  = nullptr;
+            //chat_win_ = nullptr;
+            //inp_win_  = nullptr;
 		}
 
         void NcursesView::start()
@@ -43,21 +43,17 @@ namespace meow {
             //printw("size = %d x %d", row, col);
             refresh();
 
-            // create input subwindow
-            int height = 5;
+            terminal_ = new NcursesTerminal(this, row, col, 0, 0);
+            terminal_->input();
+
+            // create start subwindow
+            /*int height = 5;
             int width = col;
             int starty = row-6;
             int startx = 0;
             inp_win_ = new NcursesInputWindow(height, width, starty, startx);
-            //ncurses::WINDOW* inp_win = newwin(height, width, starty, startx);
 
-            //box(inp_win, 0 , 0);
-
-            //mvwprintw(inp_win, 0, 3, " Please, type message and press ENTER to send: ");
-
-            //wrefresh(inp_win);		/* Show that box 		*/
-
-            // create subwindow for received window
+            // create subwindow for received messages
             height = row - height - 1;
             starty = 0;
             startx = 0;
@@ -67,7 +63,7 @@ namespace meow {
             wrefresh(chat_win_);
 
             terminal_ = new NcursesTerminal(row, col, 0, 0);
-            terminal_->input();
+            terminal_->start();*/
 
             //mvprintw(row-2,0,"This screen has %d rows and %d columns\n",row,col);
             //refresh();			/* Print it on to the real screen */
@@ -85,7 +81,7 @@ namespace meow {
                 else if (c == '\n') {  // create Message and then send it!
                     Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, 100500);
                     send(msg);
-                    inp_win_->reset(); // clear input text area
+                    inp_win_->reset(); // clear start text area
                 }
                 else if (c == ncurses::KEY_ESC) {
                     // go to Vim-like console
@@ -98,22 +94,23 @@ namespace meow {
 		void NcursesView::update()
 		{
             deque<Message>* dialog = model_->get_dialog();
-            for (size_t i = 0; i < dialog->size(); i++) {
+            /*for (size_t i = 0; i < dialog->size(); i++) {
                 mvwprintw(chat_win_, i+1, 2, "%s", dialog->at(i).get_msg_body().c_str());
             }
             wrefresh(chat_win_);
             if (inp_win_)
-                inp_win_->focus();  // return focus to the input window
+                inp_win_->focus();  // return focus to the start window*/
 		}
 
 		NcursesView::~NcursesView()
 		{
-            delete inp_win_;
+            //delete inp_win_;
             delete terminal_;
-            ncurses::endwin();			/* End curses mode		  */
+            ncurses::endwin();			// End curses mode
 		}
 
         // private methods
+
         void NcursesView::refresh()
         {
             ncurses::refresh();

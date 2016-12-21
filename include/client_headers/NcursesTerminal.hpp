@@ -4,13 +4,14 @@
 #include <deque>
 
 #include "lib_headers/ncurses-api.hpp"
+#include "client_headers/ClientView.hpp"
 
 namespace meow {
     namespace client {
 
         class NcursesTerminal {
         public:
-            NcursesTerminal(int height, int width, int starty, int startx);
+            NcursesTerminal(ClientView* parent, int height, int width, int starty, int startx);
             ~NcursesTerminal();
 
             int get_width() const;
@@ -30,6 +31,7 @@ namespace meow {
                 std::string date_to_s();
             };
 
+            ClientView* parent_;
             ncurses::WINDOW* self_;
             int width_;
             int height_;

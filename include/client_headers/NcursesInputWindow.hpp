@@ -28,7 +28,6 @@ namespace meow {
             // editable text
             std::string text_;
 
-            void clear();
             void draw_text();
         };
 

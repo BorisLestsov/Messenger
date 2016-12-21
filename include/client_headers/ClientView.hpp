@@ -14,6 +14,9 @@ namespace meow {
 			virtual void start() = 0;
 			virtual void update() = 0;
 
+			ClientModel* get_model();
+			NetController* get_controller();
+
 		protected:
 			ClientView(NetController*, ClientModel*);
             void send(const Message&);
@@ -23,6 +26,18 @@ namespace meow {
 			NetController* controller_;
 		}; // abstract class ClientView
 
+
+        // inline methods
+
+        inline ClientModel* ClientView::get_model()
+        {
+            return model_;
+        }
+
+        inline NetController* ClientView::get_controller()
+        {
+            return controller_;
+        }
 	}
 } // namespace meow
 

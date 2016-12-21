@@ -42,7 +42,7 @@ namespace meow {
                             mvwaddch(self_, y, x - 1, ' ');  // remove previous symbol
                             wmove(self_, y, x - 1);
                         }*/
-                        // if no symbols in the input window
+                        // if no symbols in the start window
                         if (x_ == x0_ && y_ == y0_)
                             ;
                         else {
@@ -84,7 +84,7 @@ namespace meow {
                     case ncurses::KEY_ESC:
                         return c;
                     case '\n':
-                        // send message & reset input window
+                        // send message & reset start window
                         return '\n';
                     default:  // insert one char
                         // no more text than nrow_ lines is allowed now!
@@ -108,12 +108,13 @@ namespace meow {
 
         void NcursesInputWindow::reset()
         {
-            clear();
+            //clear();
             text_ = "";
             x_ = x0_;
             y_ = y0_;
-            wmove(self_, y_, x_);
             refresh();
+            //wmove(self_, y_, x_);
+            //refresh();
         }
 
         void NcursesInputWindow::focus()
@@ -129,6 +130,11 @@ namespace meow {
 
         void NcursesInputWindow::refresh()
         {
+            werase(self_);
+            box(self_, 0, 0);
+            mvwprintw(self_, 0, 3, " Please, type message and press ENTER to send: ");
+            draw_text();
+            wmove(self_, y_, x_);
             wrefresh(self_);
         }
 
@@ -139,20 +145,13 @@ namespace meow {
 
         // private methods
 
-        void NcursesInputWindow::clear()
-        {
-            for (int i = y0_; i < y0_+nrow_; i++)
-                for (int j = x0_; j < x0_ + ncol_; j++)
-                    mvwaddch(self_, i, j, ' ');
-        }
-
         void NcursesInputWindow::draw_text()
         {
-            clear();
+            //werase(self_);
             for (size_t i = 0; i < text_.length(); i += ncol_) {
                 mvwprintw(self_, i/ncol_+1, x0_, "%s", text_.substr(i, ncol_).c_str());
             }
-            refresh();
+            //refresh();
         }
 
     } // namespace meow::client

@@ -5,8 +5,10 @@
 #include <vector>
 
 #include "lib_headers/ncurses-api.hpp"
+#include "client_headers/NcursesChat.hpp"
 #include "client_headers/NcursesDialog.hpp"
 #include "client_headers/NcursesTerminal.hpp"
+#include "client_headers/NcursesView.hpp"
 
 namespace meow {
     namespace client {
@@ -36,8 +38,9 @@ namespace meow {
 
         // class NcursesTerminal
 
-        NcursesTerminal::NcursesTerminal(int height, int width, int starty, int startx)
-            :   width_(width),
+        NcursesTerminal::NcursesTerminal(ClientView* parent, int height, int width, int starty, int startx)
+            :   parent_(parent),
+                width_(width),
                 height_(height),
                 pos_(2)
         {
@@ -92,6 +95,7 @@ namespace meow {
         {
             string cmd;
             int retval;
+            NcursesDialog::Answer ans;
 
             while (true) {
                 int c = wgetch(self_);
@@ -99,7 +103,7 @@ namespace meow {
                     case '\n':  // execute command
                         retval = exec(cmd);
                         if (retval == 1) { // fatal error or exit code
-                            NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
+                            ans = NcursesDialog("Are you sure you want to exit?").ask_user();
                             if (ans == NcursesDialog::YES)
                                 return;
                         }
@@ -117,9 +121,14 @@ namespace meow {
                         }
                         break;
                     case ncurses::KEY_CTRL_C:
+                        /*ans = NcursesDialog("Are you sure you want to exit?").ask_user();
+                        if (ans == NcursesDialog::YES)
+                            return;
+                        refresh();
+                        break;*/
                         return;
                     default:
-                        if (pos_ >= width_)  // too many chars in input line
+                        if (pos_ >= width_)  // too many chars in start line
                             break;
                         cmd.insert(pos_-2, 1, c);
                         draw_input_line(cmd);
@@ -139,6 +148,7 @@ namespace meow {
                 msg << "credits       print info about authors\n";
                 msg << "about         print info about program\n";
                 msg << "clear         remove all output\n";
+                msg << "chat [room]   enter chat (global if no room is specified)\n";
                 msg << "quit | exit   quit Meow Messenger";
 
                 out_buf_.push_front(output_line(msg.str()));
@@ -155,6 +165,10 @@ namespace meow {
             else if (cmd == "clear") {
                 out_buf_.clear();
                 refresh();
+            }
+            else if (cmd == "chat") {
+                NcursesChat(parent_->get_controller(), parent_->get_model(),height_, width_, 0, 0)
+                        .start();
             }
             else if (cmd == "quit" || cmd == "exit")
                 return 1;
