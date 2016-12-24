@@ -85,9 +85,7 @@ namespace meow {
 			boost::asio::async_write(socket_,
 									 boost::asio::buffer(msg_buf.get_buf(),
 														 msg_buf.get_msg_len()),
-									 write_f
-
-			);
+									 write_f);
 		}
 
 	}

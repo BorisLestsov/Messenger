@@ -10,6 +10,8 @@ namespace meow {
 
         class Participant {
         public:
+            typedef uint32_t uid;
+
             virtual ~Participant();
 
             virtual void deliver(const SerializedMessage &msg) = 0;

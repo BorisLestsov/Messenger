@@ -2,6 +2,7 @@
 #define _SERVER_HPP_INCLUDED
 
 #include <boost/asio.hpp>
+#include <map>
 #include <vector>
 
 #include "Participant.hpp"
@@ -32,6 +33,10 @@ namespace meow {
             tcp::acceptor acceptor_;
             tcp::socket server_socket_;
             vector<Chatroom> rooms_;
+
+            // for many chatrooms
+            std::map<Chatroom::room_id, Chatroom> rooms_map_;
+            std::map<Participant::uid, chat_participant_ptr> users_map_;
         };
 
     }

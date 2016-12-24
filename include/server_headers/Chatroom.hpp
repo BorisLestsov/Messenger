@@ -15,6 +15,8 @@ namespace meow {
 
         class Chatroom {
         public:
+            typedef uint32_t room_id;
+
             Chatroom(boost::asio::io_service &io_service);
 
             void join(chat_participant_ptr participant);
