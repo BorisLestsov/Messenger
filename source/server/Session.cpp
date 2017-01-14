@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "server_headers/Chatroom.hpp"
+#include "server_headers/Server.hpp"
 #include "lib_headers/Message.hpp"
 #include "server_headers/Session.hpp"
 
@@ -10,7 +11,8 @@ namespace meow {
 
 		using boost::asio::ip::tcp;
 
-		Session::Session(Chatroom &room):
+		Session::Session(Server* server, Chatroom &room):
+                server_(server),
                 socket_(std::move(*room.get_chatroom_socket())),
 				room_(room),
 				msg_buf_()
@@ -53,6 +55,7 @@ namespace meow {
 			auto read_body_f = [this](boost::system::error_code error_code, std::size_t /*length*/) {
 				if (!error_code) {
 					Message msg(msg_buf_);
+					cout << msg << endl;
 					room_.deliver(msg);
 					do_read_header();
 				} else {

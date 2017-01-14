@@ -160,7 +160,7 @@ namespace meow {
         o << "Type: " << left << setw(15) << Message::msg_type_names[msg.msg_type_]
           << "From: " << left << setw(8) << msg.uid_from_
           << "To: " << left << setw(8) << msg.uid_to_
-          << "Date: " << left << setw(8) << msg.sending_date_ << endl;
+          << "Date: " << left << msg.get_date("%H:%M:%S") << endl;
         o << msg.msg_body_ << endl;
         return o;
     }

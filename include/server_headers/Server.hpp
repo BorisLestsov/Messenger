@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "Participant.hpp"
-#include "Session.hpp"
 #include "Chatroom.hpp"
 #include "lib_headers/Message.hpp"
 
@@ -38,7 +37,6 @@ namespace meow {
             std::map<Chatroom::room_id, Chatroom> rooms_map_;
             std::map<Participant::uid, chat_participant_ptr> users_map_;
         };
-
     }
 }
 

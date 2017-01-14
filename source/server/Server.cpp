@@ -1,6 +1,7 @@
 #include <boost/asio.hpp>
 #include <iostream>
 #include "server_headers/Server.hpp"
+#include "server_headers/Session.hpp"
 
 namespace meow {
     namespace server {
@@ -23,7 +24,7 @@ namespace meow {
         void Server::do_accept() {
             auto acceptor_f = [this](boost::system::error_code error_code) {
                 if (!error_code)
-                    std::make_shared<Session>(rooms_.back())->start();
+                    std::make_shared<Session>(this, rooms_.back())->start();
                 else
                     cerr << "Error Code in do_accept" << endl;
                 do_accept();
