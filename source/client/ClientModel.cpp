@@ -6,9 +6,16 @@ namespace meow {
     namespace client {
 		
 		ClientModel::ClientModel()
+            :   user_id_(0),
+                user_nick_("")
 		{
 			
 		}
+
+        ClientModel::~ClientModel()
+        {
+
+        }
 		
 		void ClientModel::add_observer(Observer* observer)
 		{
@@ -26,9 +33,34 @@ namespace meow {
             return &dialog_;
         }
 
-        ClientModel::~ClientModel()
+        ClientModel::uid_t ClientModel::get_user_id() const
         {
+            return user_id_;
+        }
 
+        void ClientModel::set_user_id(ClientModel::uid_t new_id)
+        {
+            user_id_ = new_id;
+        }
+
+        bool ClientModel::has_user_id() const
+        {
+            return user_id_ != 0;
+        }
+
+        string ClientModel::get_user_nick() const
+        {
+            return user_nick_;
+        }
+
+        void ClientModel::set_user_nick(const string& new_nick)
+        {
+            user_nick_ = new_nick;
+        }
+
+        bool ClientModel::has_user_nick() const
+        {
+            return user_nick_ != "";
         }
         
         // private

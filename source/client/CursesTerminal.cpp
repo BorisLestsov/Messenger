@@ -2,7 +2,17 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
+
+#include <chrono>
+#include <atomic>
+#include <condition_variable>
+
+using namespace std::chrono_literals;
+
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 #include "lib_headers/ncurses-api.hpp"
 #include "client_headers/CursesChat.hpp"
@@ -16,6 +26,7 @@ namespace meow {
         using std::ostringstream;
         using std::string;
         using std::vector;
+
 
         const int CursesTerminal::TIME_COL_WIDTH = 12;
 
@@ -53,7 +64,7 @@ namespace meow {
                     "| '_ ` _ \\  / _ \\ / _ \\\\ \\ /\\ / /\n"
                     "| | | | | ||  __/| (_) |\\ V  V / \n"
                     "|_| |_| |_| \\___| \\___/  \\_/\\_/  \n\n";
-            string short_info = string("Meow Messenger v0.2 build ") + __DATE__ + __TIME__ + "\n";
+            string short_info = string("Meow Messenger v0.2 build ") + __DATE__ + " " + __TIME__ + "\n";
             out_buf_.push_front(output_line(short_info));
 
             this->refresh();
@@ -139,6 +150,9 @@ namespace meow {
 
         int CursesTerminal::exec(const string& cmd)
         {
+            std::vector<std::string> argv;
+            boost::split(argv, cmd, boost::is_any_of("\t "));
+            
             if (cmd == "")
                 out_buf_.push_front(output_line(""));
             else if (cmd == "help") {
@@ -147,6 +161,7 @@ namespace meow {
                 msg << "credits       print info about authors\n";
                 msg << "about         print info about program\n";
                 msg << "clear         remove all output\n";
+                msg << "login <nick>  login to your account or create a new one\n";
                 msg << "chat [room]   enter chat (global if no room is specified)\n";
                 msg << "quit | exit   quit Meow Messenger";
 
@@ -169,6 +184,14 @@ namespace meow {
                 CursesChat(parent_->get_controller(), parent_->get_model(),height_, width_, 0, 0)
                         .start();
             }
+            else if (argv[0] == "login") {
+                if (argv.size() != 3) {
+                    out_buf_.push_front(output_line("Error: wrong command! Format: login <nickname> <passwd>"));
+                }
+                else { // send login message to server
+                    do_login(argv[1], argv[2]);
+                }
+            }
             else if (cmd == "quit" || cmd == "exit")
                 return 1;
             else {   // error
@@ -177,6 +200,40 @@ namespace meow {
             }
             draw_output_panel();
             return 0;
+        }
+
+        void CursesTerminal::do_login(const string& nick_name, const string& passwd)
+        {
+            auto my_id = parent_->get_model()->get_user_id();
+            Message login_msg(Message::MsgType::LOGIN, nick_name, my_id, 69, time(nullptr));
+            parent_->get_controller()->send(login_msg);
+
+            out_buf_.push_front(output_line("Login query for nickname \'" + nick_name + "\'..."));
+            refresh();
+
+            // wait for server's responce, but no more than 10 sec
+            std::condition_variable cv;
+            std::mutex cv_m;
+            std::unique_lock<std::mutex> lk(cv_m);
+
+            int i = 0;
+            auto max_delay = 10s;
+            auto time_step = 50ms;
+            auto pred = [this, &cv](){return parent_->get_model()->has_user_id();};
+            while (!pred() && i*time_step <= max_delay) {
+                cv.wait_for(lk, time_step);
+                i++;
+            }
+            if (i*time_step > max_delay) {
+                out_buf_.push_front(output_line("Error: login request timeout"));
+            }
+            else {
+                ostringstream msg;
+                msg << "User data are received.\n";
+                msg << "Login  : " + nick_name << "\n";
+                msg << "User id: " << parent_->get_model()->get_user_id();
+                out_buf_.push_front(output_line(msg.str()));
+            }
         }
 
         void CursesTerminal::draw_input_line(const std::string& text)
@@ -210,8 +267,14 @@ namespace meow {
                     substrs.back() += c;
                 }
                 // draw substrings in reverse order
+                // if string starts with substring 'Error', it will be painter in red color
                 for (auto j = substrs.rbegin(); j != substrs.rend() && y >= 1; j++) {
+                    bool err = boost::starts_with(*j, "Error");
+                    if (err)
+                        wattron(self_, COLOR_PAIR(ncurses::ColorPair::RED_BLACK));
                     mvwprintw(self_, y, TIME_COL_WIDTH + 1, j->c_str());
+                    if (err)
+                        wattroff(self_, COLOR_PAIR(ncurses::ColorPair::RED_BLACK));
                     y--;
                 }
 

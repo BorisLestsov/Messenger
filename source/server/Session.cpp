@@ -55,8 +55,14 @@ namespace meow {
 			auto read_body_f = [this](boost::system::error_code error_code, std::size_t /*length*/) {
 				if (!error_code) {
 					Message msg(msg_buf_);
-					cout << msg << endl;
-					room_.deliver(msg);
+					//cout << msg << endl;
+					if (msg.get_msg_type() == Message::MsgType::LOGIN) {
+						cout << msg << endl;
+						room_.deliver(msg);
+					}
+					else {
+						room_.deliver(msg);
+					}
 					do_read_header();
 				} else {
 					std::cout << "error code in session::do_read_body" << endl;

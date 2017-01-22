@@ -39,6 +39,8 @@ namespace meow {
             std::deque<output_line> out_buf_;
 
             int exec(const std::string &);
+            void do_login(const string& nick_name, const string& passwd);
+
             void draw_input_line(const std::string& text);
             void draw_output_panel();
         }; // class CursesTerminal

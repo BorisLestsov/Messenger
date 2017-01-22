@@ -33,7 +33,7 @@ namespace meow {
 			void do_write();
 
 			tcp::socket socket_;
-			Chatroom &room_;
+			Chatroom& room_;
 			SerializedMessage msg_buf_;
 			chat_message_queue write_msgs_;
 		};

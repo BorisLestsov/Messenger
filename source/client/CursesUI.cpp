@@ -44,6 +44,7 @@ namespace meow {
 
         // draw messages from other clients of this chat
         void CursesUI::update() {
+
         }
 
         CursesUI::~CursesUI()

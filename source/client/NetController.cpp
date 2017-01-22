@@ -111,8 +111,13 @@ namespace meow {
 //                std::cout << endl;
                     Message msg(msg_buf_);
                     //cout << msg;
-                    model_->add_message(msg);
-
+                    if (msg.get_msg_type() == Message::MsgType::LOGIN) {
+                        model_->set_user_id(1);
+					}
+                    else { // it is an ordinary message
+						model_->add_message(msg);
+					}
+					
                     do_read_header();
                 } else
                     socket_->close();

@@ -12,7 +12,7 @@ set(LIB_INCLUDE_DIR "${INCLUDE_DIR}/lib_headers")
 
 
 set(Boost_USE_STATIC_LIBS ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
 find_package(Boost COMPONENTS system REQUIRED)
 
