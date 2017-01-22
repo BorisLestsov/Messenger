@@ -1,6 +1,8 @@
 #include <boost/asio.hpp>
 #include <iostream>
+#include <boost/algorithm/string.hpp>
 
+#include "server_headers/AccountData.hpp"
 #include "server_headers/Chatroom.hpp"
 #include "server_headers/Server.hpp"
 #include "lib_headers/Message.hpp"
@@ -57,8 +59,13 @@ namespace meow {
 					Message msg(msg_buf_);
 					//cout << msg << endl;
 					if (msg.get_msg_type() == Message::MsgType::LOGIN) {
-						cout << msg << endl;
-						room_.deliver(msg);
+                        vector<string> argv;
+                        boost::split(argv, msg.get_msg_body(), boost::is_any_of("\t "));
+
+                        AccountData new_acc(argv[0], argv[1]);
+						server_->get_db()->add_account(new_acc);
+                        Message response(Message::MsgType::LOGIN, "Success", 0, new_acc.get_user_id());
+						room_.deliver(response);
 					}
 					else {
 						room_.deliver(msg);

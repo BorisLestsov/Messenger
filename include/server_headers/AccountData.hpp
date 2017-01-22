@@ -15,13 +15,17 @@ namespace meow {
 
             AccountData();
             AccountData(const std::string& nick, const std::string& passwd);
+            AccountData(const AccountData& other);
             ~AccountData();
+
+            AccountData& operator=(const AccountData& other);
 
             uid_t get_user_id() const;
             void set_user_id(uid_t new_id);
             std::string get_nick_name() const;
             void set_nick_name(const std::string& new_nick);
             void set_passwd(const std::string& passwd);
+            std::string get_passwd_hash() const;
             bool check_passwd(const std::string& passwd) const;
         private:
             uid_t user_id_;

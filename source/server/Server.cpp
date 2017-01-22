@@ -1,6 +1,7 @@
 #include <boost/asio.hpp>
 #include <iostream>
 #include "server_headers/Server.hpp"
+#include "server_headers/ServerData.hpp"
 #include "server_headers/Session.hpp"
 
 namespace meow {
@@ -13,12 +14,18 @@ namespace meow {
                 server_socket_(io_service),
                 rooms_()
         {
+            db_ = new ServerDatabase();
             rooms_.push_back(Chatroom(io_service));
             do_accept();
         }
 
         size_t Server::n_rooms() const {
             return rooms_.size();
+        }
+
+        ServerDatabase* Server::get_db()
+        {
+            return db_;
         }
 
         void Server::do_accept() {

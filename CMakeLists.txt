@@ -41,8 +41,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
-add_executable(Client ${CLIENT_SOURCE_FILES} include/server_headers/AccountData.hpp include/server_headers/ChatroomData.hpp include/server_headers/ServerData.hpp)
-add_executable(Server ${SERVER_SOURCE_FILES} source/server/AccountData.cpp source/server/ChatroomData.cpp source/server/ServerData.cpp)
+add_executable(Client ${CLIENT_SOURCE_FILES})
+add_executable(Server ${SERVER_SOURCE_FILES})
 
 set_target_properties( Server Client Main
 		PROPERTIES

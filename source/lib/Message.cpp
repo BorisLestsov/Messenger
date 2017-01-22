@@ -99,6 +99,13 @@ namespace meow {
             msg_type_(MsgType::EMPTY),
             msg_body_() {}
 
+    Message::Message(MsgType t, const string &str, uid_t from, uid_t to) :
+            msg_type_(t),
+            uid_from_(from),
+            uid_to_(to),
+            sending_date_(time(nullptr)),
+            msg_body_(str) {}
+
     Message::Message(MsgType t, const string &str, uid_t from, uid_t to, send_date_t date) :
             msg_type_(t),
             uid_from_(from),
@@ -171,6 +178,16 @@ namespace meow {
 
     const string& Message::get_msg_body() const {
         return msg_body_;
+    }
+
+    Message::uid_t Message::get_to_uid() const
+    {
+        return uid_to_;
+    }
+
+    Message::uid_t Message::get_from_uid() const
+    {
+        return uid_from_;
     }
 
     string Message::get_date(string format) const

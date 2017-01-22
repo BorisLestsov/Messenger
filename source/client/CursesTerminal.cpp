@@ -188,6 +188,9 @@ namespace meow {
                 if (argv.size() != 3) {
                     out_buf_.push_front(output_line("Error: wrong command! Format: login <nickname> <passwd>"));
                 }
+                else if (parent_->get_model()->has_user_id()) {
+                    out_buf_.push_front(output_line("Error: you are already logged in!"));
+                }
                 else { // send login message to server
                     do_login(argv[1], argv[2]);
                 }
@@ -205,10 +208,11 @@ namespace meow {
         void CursesTerminal::do_login(const string& nick_name, const string& passwd)
         {
             auto my_id = parent_->get_model()->get_user_id();
-            Message login_msg(Message::MsgType::LOGIN, nick_name, my_id, 69, time(nullptr));
+            string body = nick_name + " " + passwd;
+            Message login_msg(Message::MsgType::LOGIN, body, my_id, 0, time(nullptr));
             parent_->get_controller()->send(login_msg);
 
-            out_buf_.push_front(output_line("Login query for nickname \'" + nick_name + "\'..."));
+            out_buf_.push_front(output_line("Login query for nickname \'" + login_msg.get_msg_body() + "\'..."));
             refresh();
 
             // wait for server's responce, but no more than 10 sec
@@ -217,7 +221,7 @@ namespace meow {
             std::unique_lock<std::mutex> lk(cv_m);
 
             int i = 0;
-            auto max_delay = 10s;
+            auto max_delay = 1s; // 10s
             auto time_step = 50ms;
             auto pred = [this, &cv](){return parent_->get_model()->has_user_id();};
             while (!pred() && i*time_step <= max_delay) {

@@ -7,6 +7,7 @@
 
 #include "Participant.hpp"
 #include "Chatroom.hpp"
+#include "server_headers/ServerData.hpp"
 #include "lib_headers/Message.hpp"
 
 namespace meow {
@@ -26,12 +27,17 @@ namespace meow {
             size_t n_in_room() const;
             void list_room() const;
 
+            ServerDatabase* get_db();
+
         private:
             void do_accept();
 
             tcp::acceptor acceptor_;
             tcp::socket server_socket_;
             vector<Chatroom> rooms_;
+
+            // user database
+            ServerDatabase* db_;
 
             // for many chatrooms
             std::map<Chatroom::room_id, Chatroom> rooms_map_;
