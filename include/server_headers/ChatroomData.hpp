@@ -1,0 +1,8 @@
+#ifndef _CHATROOM_DATA_HPP_INCLUDED
+#define _CHATROOM_DATA_HPP_INCLUDED
+
+class ChatroomData {
+
+};
+
+#endif // _CHATROOM_DATA_HPP_INCLUDED

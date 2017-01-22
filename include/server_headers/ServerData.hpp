@@ -1,0 +1,8 @@
+#ifndef _SERVER_DATA_HPP_INCLUDED
+#define _SERVER_DATA_HPP_INCLUDED
+
+class ServerData {
+
+};
+
+#endif // _SERVER_DATA_HPP_INCLUDED
