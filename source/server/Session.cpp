@@ -62,10 +62,28 @@ namespace meow {
                         vector<string> argv;
                         boost::split(argv, msg.get_msg_body(), boost::is_any_of("\t "));
 
-                        AccountData new_acc(argv[0], argv[1]);
-						server_->get_db()->add_account(new_acc);
-                        Message response(Message::MsgType::LOGIN, "Success", 0, new_acc.get_user_id());
-						room_.deliver(response);
+                        AccountData new_acc(argv[0], AccountData::str_to_md5(argv[1]));
+                        ServerDatabase* db = server_->get_db();
+                        AccountData* acc = db->get_account(new_acc.get_user_id());
+                        if (!acc) { // no user with such a nickname
+                            db->add_account(new_acc);
+                            Message response(Message::MsgType::LOGIN, "Account successfully created",
+                                             0, new_acc.get_user_id());
+                            cout << "create new account" << endl;
+                            this->deliver(response);
+                        }
+                        // account was found. check password
+                        else if (!acc->check_passwd(argv[1])) {
+                            cout << "wrong password" << endl;
+                            this->deliver(Message(Message::MsgType::LOGIN, "Wrong password", 0, 0));
+                        }
+                        // all is OK
+                        else {
+                            cout << "successfully logged into old account" << endl;
+                            Message response(Message::MsgType::LOGIN,
+                                             "Logged in succesfully", 0, new_acc.get_user_id());
+                            this->deliver(response);
+                        }
 					}
 					else {
 						room_.deliver(msg);

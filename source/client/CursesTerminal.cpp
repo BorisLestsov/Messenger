@@ -207,7 +207,8 @@ namespace meow {
 
         void CursesTerminal::do_login(const string& nick_name, const string& passwd)
         {
-            auto my_id = parent_->get_model()->get_user_id();
+            ClientModel* model = parent_->get_model();
+            auto my_id = model->get_user_id();
             string body = nick_name + " " + passwd;
             Message login_msg(Message::MsgType::LOGIN, body, my_id, 0, time(nullptr));
             parent_->get_controller()->send(login_msg);
@@ -223,7 +224,10 @@ namespace meow {
             int i = 0;
             auto max_delay = 1s; // 10s
             auto time_step = 50ms;
-            auto pred = [this, &cv](){return parent_->get_model()->has_user_id();};
+            auto pred = [this, &cv] () {
+                return parent_->get_model()->has_user_id()   // true if user_id received or an error occured
+                       || parent_->get_model()->has_error();
+            };
             while (!pred() && i*time_step <= max_delay) {
                 cv.wait_for(lk, time_step);
                 i++;
@@ -231,11 +235,15 @@ namespace meow {
             if (i*time_step > max_delay) {
                 out_buf_.push_front(output_line("Error: login request timeout"));
             }
+            else if (model->has_error()) {
+                out_buf_.push_front(output_line("Error: " + model->get_error_message()));
+                model->reset_error();
+            }
             else {
                 ostringstream msg;
                 msg << "User data are received.\n";
                 msg << "Login  : " + nick_name << "\n";
-                msg << "User id: " << parent_->get_model()->get_user_id();
+                msg << "User id: " << model->get_user_id();
                 out_buf_.push_front(output_line(msg.str()));
             }
         }

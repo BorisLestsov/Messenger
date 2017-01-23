@@ -15,6 +15,7 @@ namespace meow {
                 rooms_()
         {
             db_ = new ServerDatabase();
+            db_->load("meow-users.db");
             rooms_.push_back(Chatroom(io_service));
             do_accept();
         }

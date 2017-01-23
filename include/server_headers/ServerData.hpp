@@ -14,7 +14,9 @@ namespace meow {
             ServerDatabase();
             ~ServerDatabase();
 
-            bool add_account(const AccountData& new_acc);
+            bool has_account(AccountData::uid_t id) const;
+            AccountData* get_account(AccountData::uid_t id);
+            void add_account(const AccountData& new_acc);
 
             void load (const std::string& db_file);
             void store(const std::string& db_file);

@@ -113,7 +113,12 @@ namespace meow {
                     //cout << msg;
                     if (msg.get_msg_type() == Message::MsgType::LOGIN) {
                         // extract user_id from server's response
-                        model_->set_user_id(msg.get_to_uid()); // server has assigned User ID to this client [user]
+                        // or set error flag and message (in the MODEL object)
+                        Message::uid_t to = msg.get_to_uid();
+                        if (to == 0) // error!
+                            model_->set_error_message(msg.get_msg_body());
+                        else
+                            model_->set_user_id(to); // server has assigned User ID to this client [user]
 					}
                     else { // it is an ordinary message
 						model_->add_message(msg);

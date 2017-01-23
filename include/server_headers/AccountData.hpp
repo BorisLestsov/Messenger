@@ -14,7 +14,7 @@ namespace meow {
             typedef size_t uid_t;
 
             AccountData();
-            AccountData(const std::string& nick, const std::string& passwd);
+            AccountData(const std::string& nick, const std::string& passwd_md5);
             AccountData(const AccountData& other);
             ~AccountData();
 
@@ -24,13 +24,14 @@ namespace meow {
             void set_user_id(uid_t new_id);
             std::string get_nick_name() const;
             void set_nick_name(const std::string& new_nick);
-            void set_passwd(const std::string& passwd);
             std::string get_passwd_hash() const;
             bool check_passwd(const std::string& passwd) const;
+
+            static std::string str_to_md5(const std::string& s);
         private:
             uid_t user_id_;
             std::string nick_name_;
-            unsigned char passwd_md5_[MD5_DIGEST_LENGTH];
+            std::string passwd_md5_;
         };
     } // namespace server
 } // namespace meow

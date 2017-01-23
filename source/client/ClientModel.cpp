@@ -62,6 +62,32 @@ namespace meow {
         {
             return user_nick_ != "";
         }
+
+        void ClientModel::reset_error()
+        {
+            error_on_ = false;
+        }
+
+        void ClientModel::set_error(bool err)
+        {
+            error_on_ = err;
+        }
+
+        bool ClientModel::has_error() const
+        {
+            return error_on_;
+        }
+
+        void ClientModel::set_error_message(const string& msg)
+        {
+            error_on_ = true;
+            err_message_ = msg;
+        }
+
+        string ClientModel::get_error_message() const
+        {
+            return err_message_;
+        }
         
         // private
         void ClientModel::notify_all()

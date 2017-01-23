@@ -17,20 +17,19 @@ namespace meow {
         {
         }
 
-        AccountData::AccountData(const string& nick, const string& passwd)
+        AccountData::AccountData(const string& nick, const string& passwd_md5)
         {
             nick_name_ = nick;
             std::hash<string> hash_fun;
             user_id_ = hash_fun(nick);
-            set_passwd(passwd);
+            passwd_md5_ = passwd_md5;
         }
 
         AccountData::AccountData(const AccountData& other)
         {
             user_id_ = other.user_id_;
             nick_name_ = other.nick_name_;
-            for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
-                passwd_md5_[i] = other.passwd_md5_[i];
+            passwd_md5_ = other.passwd_md5_;
         }
 
         AccountData::~AccountData()
@@ -41,8 +40,7 @@ namespace meow {
         {
             user_id_ = other.user_id_;
             nick_name_ = other.nick_name_;
-            for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
-                passwd_md5_[i] = other.passwd_md5_[i];
+            passwd_md5_ = other.passwd_md5_;
         }
 
         AccountData::uid_t AccountData::get_user_id() const
@@ -65,34 +63,29 @@ namespace meow {
             nick_name_ = new_nick;
         }
 
-        void AccountData::set_passwd(const string& passwd)
-        {
-            string s = nick_name_ + passwd;
-            MD5((const unsigned char*) s.c_str(), s.length(), passwd_md5_);
-
-            char buf[16];
-            string result;
-            for (int i=0;i<16;i++){
-                sprintf(buf, "%02x", passwd_md5_[i]);
-                result.append( buf );
-            }
-            cout << result << endl;
-        }
-
         string AccountData::get_passwd_hash() const
         {
-            char buf[16];
-            string result;
-            for (int i = 0; i < 16; i++) {
-                sprintf(buf, "%02x", passwd_md5_[i]);
-                result.append(buf);
-            }
-            return result;
+            return passwd_md5_;
         }
 
         bool AccountData::check_passwd(const std::string& passwd) const
         {
-            return true;
+            return passwd_md5_ == str_to_md5(passwd);
+        }
+
+        // transform string to its MD5 representation
+        std::string AccountData::str_to_md5(const std::string& s)
+        {
+            unsigned char md5_digest[MD5_DIGEST_LENGTH];
+            MD5((const unsigned char*) s.c_str(), s.length(), md5_digest);
+
+            char buf[MD5_DIGEST_LENGTH];
+            string result;
+            for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+                sprintf(buf, "%02x", md5_digest[i]);
+                result.append(buf);
+            }
+            return result;
         }
 
     } // namespace server

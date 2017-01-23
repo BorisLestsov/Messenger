@@ -28,6 +28,13 @@ namespace meow {
             void set_user_nick(const string& new_nick);
             bool has_user_nick() const;
 
+			// errno-like mechanism
+            void reset_error();
+            void set_error(bool err);
+            bool has_error() const;
+            void set_error_message(const string& msg);
+            string get_error_message() const;
+
         private:
             std::deque<Message> dialog_;
 			std::list<Observer*> observers_;
@@ -35,6 +42,10 @@ namespace meow {
             // account data
             uid_t user_id_;
             std::string user_nick_;
+
+            // errors
+            bool error_on_;
+            std::string err_message_;
 
 			void notify_all();
 		}; // class ClientModel
