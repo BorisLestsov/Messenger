@@ -13,16 +13,15 @@ namespace meow {
         using std::endl;
         using std::string;
 
-        AccountData::AccountData()
+        /*AccountData::AccountData()
         {
-        }
+        }*/
 
         AccountData::AccountData(const string& nick, const string& passwd_md5)
+            :   nick_name_(nick), passwd_md5_(passwd_md5), online_(false)
         {
-            nick_name_ = nick;
             std::hash<string> hash_fun;
             user_id_ = hash_fun(nick);
-            passwd_md5_ = passwd_md5;
         }
 
         AccountData::AccountData(const AccountData& other)
@@ -30,6 +29,7 @@ namespace meow {
             user_id_ = other.user_id_;
             nick_name_ = other.nick_name_;
             passwd_md5_ = other.passwd_md5_;
+            online_ = other.online_;
         }
 
         AccountData::~AccountData()
@@ -71,6 +71,16 @@ namespace meow {
         bool AccountData::check_passwd(const std::string& passwd) const
         {
             return passwd_md5_ == str_to_md5(passwd);
+        }
+
+        bool AccountData::is_online() const
+        {
+            return online_;
+        }
+
+        void AccountData::set_online(bool online)
+        {
+            online_ = online;
         }
 
         // transform string to its MD5 representation

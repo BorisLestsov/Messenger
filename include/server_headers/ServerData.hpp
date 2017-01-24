@@ -5,6 +5,7 @@
 #include <string>
 
 #include "AccountData.hpp"
+#include "ChatroomData.hpp"
 
 namespace meow {
     namespace server {
@@ -22,6 +23,7 @@ namespace meow {
             void store(const std::string& db_file);
         private:
             std::map<AccountData::uid_t, AccountData*> acc_data_;
+            std::map<ChatroomData::roomid_t, ChatroomData*> room_data_;
         };
 
     } // namespace server

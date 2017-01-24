@@ -40,6 +40,7 @@ namespace meow {
 
             int exec(const std::string &);
             void do_login(const string& nick_name, const string& passwd);
+            void do_logout();
 
             void draw_input_line(const std::string& text);
             void draw_output_panel();

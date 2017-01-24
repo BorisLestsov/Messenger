@@ -133,8 +133,10 @@ namespace meow {
                         break;
                     case ncurses::KEY_CTRL_C:
                         ans = CursesDialog("Are you sure you want to exit?").ask_user();
-                        if (ans == CursesDialog::YES)
+                        if (ans == CursesDialog::YES) {
+                            do_logout();
                             return;
+                        }
                         refresh();
                         break;
                     default:
@@ -162,6 +164,7 @@ namespace meow {
                 msg << "about         print info about program\n";
                 msg << "clear         remove all output\n";
                 msg << "login <nick>  login to your account or create a new one\n";
+                msg << "logout        logout from account\n";
                 msg << "chat [room]   enter chat (global if no room is specified)\n";
                 msg << "quit | exit   quit Meow Messenger";
 
@@ -195,8 +198,14 @@ namespace meow {
                     do_login(argv[1], argv[2]);
                 }
             }
-            else if (cmd == "quit" || cmd == "exit")
+            else if (argv[0] == "logout") {
+                do_logout();
+                out_buf_.push_front(output_line("Logged out"));
+            }
+            else if (cmd == "quit" || cmd == "exit") {
+                do_logout();
                 return 1;
+            }
             else {   // error
                 string msg = "Error! Type 'help' to see available options";
                 out_buf_.push_front(output_line(msg));
@@ -246,6 +255,13 @@ namespace meow {
                 msg << "User id: " << model->get_user_id();
                 out_buf_.push_front(output_line(msg.str()));
             }
+        }
+
+        void CursesTerminal::do_logout()
+        {
+            ClientModel* model = parent_->get_model();
+            parent_->get_controller()->send(Message(Message::MsgType::LOGOUT, "", model->get_user_id(), 0));
+            model->set_user_id(0);
         }
 
         void CursesTerminal::draw_input_line(const std::string& text)

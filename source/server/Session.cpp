@@ -66,6 +66,7 @@ namespace meow {
                         ServerDatabase* db = server_->get_db();
                         AccountData* acc = db->get_account(new_acc.get_user_id());
                         if (!acc) { // no user with such a nickname
+                            new_acc.set_online(true);
                             db->add_account(new_acc);
                             Message response(Message::MsgType::LOGIN, "Account successfully created",
                                              0, new_acc.get_user_id());
@@ -80,11 +81,19 @@ namespace meow {
                         // all is OK
                         else {
                             cout << "successfully logged into old account" << endl;
+                            acc->set_online(true);
                             Message response(Message::MsgType::LOGIN,
                                              "Logged in succesfully", 0, new_acc.get_user_id());
                             this->deliver(response);
                         }
 					}
+                    else if (msg.get_msg_type() == Message::MsgType::LOGOUT) {
+                        AccountData* acc = server_->get_db()->get_account(msg.get_from_uid());
+                        if (acc) {
+                            acc->set_online(false);
+                            cout << "Log out " << msg.get_from_uid() << endl;
+                        }
+                    }
 					else {
 						room_.deliver(msg);
 					}

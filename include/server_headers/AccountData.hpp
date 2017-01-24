@@ -13,7 +13,7 @@ namespace meow {
         public:
             typedef size_t uid_t;
 
-            AccountData();
+            //AccountData();
             AccountData(const std::string& nick, const std::string& passwd_md5);
             AccountData(const AccountData& other);
             ~AccountData();
@@ -27,11 +27,15 @@ namespace meow {
             std::string get_passwd_hash() const;
             bool check_passwd(const std::string& passwd) const;
 
+            bool is_online() const;
+            void set_online(bool online);
+
             static std::string str_to_md5(const std::string& s);
         private:
             uid_t user_id_;
             std::string nick_name_;
             std::string passwd_md5_;
+            bool online_;
         };
     } // namespace server
 } // namespace meow
