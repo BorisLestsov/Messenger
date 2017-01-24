@@ -35,6 +35,9 @@ namespace meow {
             void set_error_message(const string& msg);
             string get_error_message() const;
 
+            bool received_response() const;
+            void set_received_response(bool received);
+
         private:
             std::deque<Message> dialog_;
 			std::list<Observer*> observers_;
@@ -46,6 +49,8 @@ namespace meow {
             // errors
             bool error_on_;
             std::string err_message_;
+
+            bool response_;
 
 			void notify_all();
 		}; // class ClientModel

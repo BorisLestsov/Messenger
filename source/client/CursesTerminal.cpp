@@ -134,7 +134,7 @@ namespace meow {
                     case ncurses::KEY_CTRL_C:
                         ans = CursesDialog("Are you sure you want to exit?").ask_user();
                         if (ans == CursesDialog::YES) {
-                            do_logout();
+                            //do_logout();
                             return;
                         }
                         refresh();
@@ -183,9 +183,27 @@ namespace meow {
                 out_buf_.clear();
                 refresh();
             }
-            else if (cmd == "chat") {
-                CursesChat(parent_->get_controller(), parent_->get_model(),height_, width_, 0, 0)
-                        .start();
+            else if (argv[0] == "chat") {
+                if (argv.size() != 2) {
+                    out_buf_.push_front(output_line("Error: wrong command! Format: chat <nickname>"));
+                }
+                else if (!parent_->get_model()->has_user_id()) {
+                    out_buf_.push_front(output_line("Error: you are not logged in"));
+                }
+                else {
+                    Message::uid_t to = request_uid(argv[1]);  // request server for id of required user
+                    if (to) {
+                        vector<Message::uid_t> usrlist;
+                        usrlist.push_back(parent_->get_model()->get_user_id());
+                        usrlist.push_back(to);
+                        Message::uid_t room_id = do_newroom(usrlist);
+                        if (room_id) {
+                            CursesChat(parent_->get_controller(), parent_->get_model(), to,
+                                       height_, width_, 0, 0)
+                                    .start();
+                        }
+                    }
+                }
             }
             else if (argv[0] == "login") {
                 if (argv.size() != 3) {
@@ -199,8 +217,12 @@ namespace meow {
                 }
             }
             else if (argv[0] == "logout") {
-                do_logout();
-                out_buf_.push_front(output_line("Logged out"));
+                if (parent_->get_model()->get_user_id()) {
+                    do_logout();
+                    out_buf_.push_front(output_line("Logged out"));
+                }
+                else
+                    out_buf_.push_front(output_line("Error: you are not logged in"));
             }
             else if (cmd == "quit" || cmd == "exit") {
                 do_logout();
@@ -262,6 +284,102 @@ namespace meow {
             ClientModel* model = parent_->get_model();
             parent_->get_controller()->send(Message(Message::MsgType::LOGOUT, "", model->get_user_id(), 0));
             model->set_user_id(0);
+        }
+
+        Message::uid_t CursesTerminal::request_uid(const string& nick)
+        {
+            ClientModel* model = parent_->get_model();
+            NetController* net = parent_->get_controller();
+            auto my_id = model->get_user_id();
+            Message req_msg(Message::MsgType::UID_REQUEST, nick, my_id, 0);
+            net->send(req_msg);
+
+            // wait for response
+            std::condition_variable cv;
+            std::mutex cv_m;
+            std::unique_lock<std::mutex> lk(cv_m);
+
+            int i = 0;
+            auto max_delay = 1s; // 10s
+            auto time_step = 50ms;
+            auto pred = [this, &cv, net] () {
+                return net->has_response()   // true if user_id received or an error occured
+                       || parent_->get_model()->has_error();
+            };
+            while (!pred() && i*time_step <= max_delay) {
+                cv.wait_for(lk, time_step);
+                i++;
+            }
+            if (i*time_step > max_delay) {
+                out_buf_.push_front(output_line("Error: login request timeout"));
+            }
+            else if (model->has_error()) {
+                out_buf_.push_front(output_line("Error: " + model->get_error_message()));
+                model->reset_error();
+            }
+            else {
+                string resp = net->get_last_response().get_msg_body();
+                net->reset_last_response();
+                istringstream iss(resp);
+                Message::uid_t id;
+                iss >> id;
+                ostringstream msg;
+                msg << "user id: " << id;
+                out_buf_.push_front(output_line(msg.str()));
+                return id;
+            }
+            return 0;
+        }
+
+        Message::uid_t CursesTerminal::do_newroom(const std::vector<Message::uid_t>& user_ids)
+        {
+            auto model = parent_->get_model();
+            auto netctl = parent_->get_controller();
+            auto my_id = model->get_user_id();
+
+            ostringstream usrlist;
+            usrlist << user_ids.size() << " ";
+            for (auto i = 0; i < user_ids.size(); i++)
+                usrlist << user_ids[i] << " ";
+
+            Message request(Message::MsgType::NEWROOM, usrlist.str(), my_id, 0);
+            netctl->send(request);
+
+            // wait for response
+            std::condition_variable cv;
+            std::mutex cv_m;
+            std::unique_lock<std::mutex> lk(cv_m);
+
+            int i = 0;
+            auto max_delay = 1s; // 10s
+            auto time_step = 50ms;
+            auto pred = [this, &cv, netctl] () {
+                return netctl->has_response()   // true if user_id received or an error occured
+                       || parent_->get_model()->has_error();
+            };
+            while (!pred() && i*time_step <= max_delay) {
+                cv.wait_for(lk, time_step);
+                i++;
+            }
+            if (i*time_step > max_delay) {
+                out_buf_.push_front(output_line("Error: create_room request timeout"));
+            }
+            else if (model->has_error()) {
+                out_buf_.push_front(output_line("Error: " + model->get_error_message()));
+                model->reset_error();
+            }
+            else {
+                string resp = netctl->get_last_response().get_msg_body();
+                netctl->reset_last_response();
+                istringstream iss(resp);
+                Message::uid_t id;
+                iss >> id;
+                ostringstream msg;
+                msg << "room id: " << id;
+                out_buf_.push_front(output_line(msg.str()));
+                return id;
+            }
+            return 0;
         }
 
         void CursesTerminal::draw_input_line(const std::string& text)

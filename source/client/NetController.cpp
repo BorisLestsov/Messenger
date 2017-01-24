@@ -120,6 +120,17 @@ namespace meow {
                         else
                             model_->set_user_id(to); // server has assigned User ID to this client [user]
 					}
+                    else if (msg.get_msg_type() == Message::MsgType::UID_REQUEST) {
+                        has_last_resp_ = true;
+                        last_response_ = msg;
+                    }
+                    else if (msg.get_msg_type() == Message::MsgType::NEWROOM) {
+                        has_last_resp_ = true;
+                        last_response_ = msg;
+                    }
+                    else if (msg.get_msg_type() == Message::MsgType::ERROR) {
+                        model_->set_error_message(msg.get_msg_body());
+                    }
                     else { // it is an ordinary message
 						model_->add_message(msg);
 					}
@@ -160,6 +171,21 @@ namespace meow {
 
 		NetController::~NetController()
 		{}
+
+        bool NetController::has_response() const
+        {
+            return has_last_resp_;
+        }
+
+        void NetController::reset_last_response()
+        {
+            has_last_resp_ = false;
+        }
+
+        Message NetController::get_last_response()
+        {
+            return last_response_;
+        }
 
 	}
 } // namespace meow

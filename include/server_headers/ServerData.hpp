@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "AccountData.hpp"
 #include "ChatroomData.hpp"
@@ -17,7 +18,9 @@ namespace meow {
 
             bool has_account(AccountData::uid_t id) const;
             AccountData* get_account(AccountData::uid_t id);
+            AccountData* get_account(const std::string& nick);
             void add_account(const AccountData& new_acc);
+            ChatroomData* get_room(std::vector<AccountData::uid_t>& uids);
 
             void load (const std::string& db_file);
             void store(const std::string& db_file);

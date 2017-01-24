@@ -14,13 +14,16 @@ namespace meow {
         const int CursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
 
         CursesChat::CursesChat(NetController* net, ClientModel* model,
-                                 int height, int width, int starty, int startx)
+                               Message::uid_t room_id,
+                               int height, int width, int starty, int startx)
             :   ClientUI(net, model),
                 width_(width),
-                height_(height)
+                height_(height),
+                room_id_(room_id)
         {
             //model_->add_observer(this);
             self_ = newwin(height, width, startx, starty);
+            my_id_ = model_->get_user_id();
 
             // create start subwindow
             starty = height - INPUT_HEIGHT;
@@ -67,7 +70,7 @@ namespace meow {
                     return;
                 }
                 else if (c == '\n') {  // create Message and then send it!
-                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, time(nullptr));
+                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), my_id_, room_id_);
                     send(msg);
                     inp_win_->reset(); // clear start text area
                 }

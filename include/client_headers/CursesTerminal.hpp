@@ -41,6 +41,8 @@ namespace meow {
             int exec(const std::string &);
             void do_login(const string& nick_name, const string& passwd);
             void do_logout();
+            Message::uid_t request_uid(const std::string& nick);
+            Message::uid_t do_newroom(const std::vector<Message::uid_t>& user_ids);
 
             void draw_input_line(const std::string& text);
             void draw_output_panel();

@@ -12,7 +12,8 @@ namespace meow {
     namespace client {
         class CursesChat : public ClientUI {
         public:
-            CursesChat(NetController* net, ClientModel* model, int height, int width, int starty, int startx);
+            CursesChat(NetController* net, ClientModel* model, Message::uid_t room_id,
+                       int height, int width, int starty, int startx);
             ~CursesChat();
 
             int get_width() const;
@@ -29,6 +30,9 @@ namespace meow {
             CursesInputWindow* inp_win_;
             int width_;
             int height_;
+
+            Message::uid_t room_id_;
+            Message::uid_t my_id_;
 
             void draw_msg_list();
         }; // class CursesChat

@@ -88,6 +88,16 @@ namespace meow {
         {
             return err_message_;
         }
+
+        bool ClientModel::received_response() const
+        {
+            return response_;
+        }
+
+        void ClientModel::set_received_response(bool received)
+        {
+            response_ = received;
+        }
         
         // private
         void ClientModel::notify_all()

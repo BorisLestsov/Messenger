@@ -56,7 +56,7 @@ namespace meow {
         static const size_t MAX_BODY_LENGTH = 512;
 
         enum MsgType {
-            EMPTY = 0, TEXT, LOGIN, LOGOUT, CREATE_ROOM, INVITE
+            EMPTY = 0, TEXT, LOGIN, LOGOUT, NEWROOM, INVITE, UID_REQUEST, ERROR
         };
         // For debug
         static const char *msg_type_names[];

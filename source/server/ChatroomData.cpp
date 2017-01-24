@@ -1,11 +1,13 @@
 #include "server_headers/AccountData.hpp"
 #include "server_headers/ChatroomData.hpp"
 
+#include <sstream>
 #include <string>
 
 namespace meow {
     namespace server {
 
+        using std::ostringstream;
         using std::string;
 
         ChatroomData::ChatroomData(const string& name)
@@ -13,6 +15,17 @@ namespace meow {
             std::hash<string> hash_fun;
             room_id_ = hash_fun(name);
             room_name_ = name;
+        }
+
+        ChatroomData::ChatroomData(const std::vector<AccountData::uid_t >& uids)
+            :   users_in_(uids)
+        {
+            ostringstream os;
+            for (auto i = 0; i < uids.size(); i++)
+                os << uids[i];
+            std::hash<string> hash_fun;
+            room_id_ = hash_fun(os.str());
+            room_name_ = "";
         }
 
         ChatroomData::~ChatroomData()
@@ -66,6 +79,12 @@ namespace meow {
         bool ChatroomData::has_user(AccountData* user_acc) const
         {
             return has_user(user_acc->get_user_id());
+        }
+
+
+        std::vector<AccountData::uid_t>& ChatroomData::get_user_list()
+        {
+            return users_in_;
         }
 
     } // namespace server

@@ -41,7 +41,7 @@ namespace meow {
 					msg_buf_.decode_msg_length();
 					do_read_body();
 				} else {
-					std::cout << "error code in session::do_read_header" << endl;
+					//std::cout << "error code in session::do_read_header" << endl;
 					room_.leave(shared_from_this());
 				}
 			};
@@ -87,6 +87,52 @@ namespace meow {
                             this->deliver(response);
                         }
 					}
+					else if (msg.get_msg_type() == Message::MsgType::UID_REQUEST) {
+						AccountData* acc = server_->get_db()->get_account(msg.get_msg_body());
+						if (acc) {
+                            ostringstream resp;
+                            resp << acc->get_user_id();
+                            Message response(Message::MsgType::UID_REQUEST,
+                                             resp.str(), 0, msg.get_from_uid());
+                            this->deliver(response);
+						}
+                        else {
+                            Message response(Message::MsgType::ERROR,
+                                             "No user with nick " + msg.get_msg_body() + " found",
+                                             0, msg.get_from_uid());
+                            this->deliver(response);
+                        }
+					}
+                    else if (msg.get_msg_type() == Message::MsgType::NEWROOM) {
+                        // extract uids from message body
+                        istringstream iss(msg.get_msg_body());
+                        int n_users;
+                        Message::uid_t id;
+                        vector<Message::uid_t> uids;
+                        iss >> n_users;
+                        for (int i = 0; i < n_users; i++) {
+                            iss >> id;
+                            uids.push_back(id);
+                        }
+
+                        cout << "create new room for " << msg.get_msg_body() << endl;
+
+                        ChatroomData* room = server_->get_db()->get_room(uids);
+                        if (room) {
+                            cout << "created new room with id = " << room->get_room_id() << endl;
+                            ostringstream resp;
+                            resp << room->get_room_id(); // send room_id to client
+                            Message response(Message::MsgType::NEWROOM,
+                                             resp.str(), 0, msg.get_from_uid());
+                            this->deliver(response);
+                        }
+                        else {
+                            Message response(Message::MsgType::ERROR,
+											 "Unable to create chat room",
+                                             0, msg.get_from_uid());
+                            this->deliver(response);
+                        }
+                    }
                     else if (msg.get_msg_type() == Message::MsgType::LOGOUT) {
                         AccountData* acc = server_->get_db()->get_account(msg.get_from_uid());
                         if (acc) {
@@ -94,12 +140,12 @@ namespace meow {
                             cout << "Log out " << msg.get_from_uid() << endl;
                         }
                     }
-					else {
+					else { // ordinary text
 						room_.deliver(msg);
 					}
 					do_read_header();
 				} else {
-					std::cout << "error code in session::do_read_body" << endl;
+					//std::cout << "error code in session::do_read_body" << endl;
 					room_.leave(shared_from_this());
 				}
 			};
