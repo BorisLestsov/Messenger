@@ -16,5 +16,5 @@
 
 ### How to run:
 
-- ./Server <port>
-- ./Client <server-ip> <server-port>
+- ./Server \<port\>
+- ./Client \<server-ip\> \<server-port\>
