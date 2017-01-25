@@ -14,8 +14,9 @@ set(LIB_INCLUDE_DIR "${INCLUDE_DIR}/lib_headers")
 set(Boost_USE_STATIC_LIBS ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -g")
 
-find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost COMPONENTS system thread regex REQUIRED)
 find_package(OpenSSL)
+find_package(Curses)
 
 file(GLOB_RECURSE CLIENT_SOURCE_FILES
 		"${CLIENT_SOURCE_DIR}/*.cpp"
@@ -38,6 +39,8 @@ include_directories(${SERVER_INCLUDE_DIR})
 include_directories(${CLIENT_INCLUDE_DIR})
 include_directories(${LIB_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${CURSES_INCLUDE_DIRS})
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 add_library(Lib STATIC ${LIB_SOURCE_FILES})
 add_executable(Main ${SOURCE_DIR}/main.cpp)
@@ -60,6 +63,10 @@ add_custom_target(_clean COMMAND rm -f CMakeCache.txt cmake_install.cmake
 		COMMAND rm -f Makefile
 		CLION_EXE_DIR=${PROJECT_BINARY_DIR})
 
-target_link_libraries(Client ${Boost_LIBRARIES} Lib pthread boost_thread ncurses)
-target_link_libraries(Server ${Boost_LIBRARIES} Lib pthread boost_thread ssl crypto)
-target_link_libraries(Main ${Boost_LIBRARIES} Lib pthread boost_thread)
+if (WIN32)
+	add_definitions(-DNOGDI)
+endif (WIN32)
+
+target_link_libraries(Client ${Boost_LIBRARIES} Lib ${CURSES_LIBRARIES})
+target_link_libraries(Server ${Boost_LIBRARIES} Lib ${OPENSSL_LIBRARIES})
+target_link_libraries(Main ${Boost_LIBRARIES} Lib)

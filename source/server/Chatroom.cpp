@@ -7,7 +7,7 @@
 namespace meow {
     namespace server {
 
-        const uint Chatroom::max_recent_msgs = MAX_RECENT_MESSAGES;
+        const uint64_t Chatroom::max_recent_msgs = MAX_RECENT_MESSAGES;
 
         Chatroom::Chatroom(boost::asio::io_service &io_service):
                 chatroom_socket_(io_service)

@@ -10,7 +10,7 @@ namespace meow {
 
         class Participant {
         public:
-            typedef uint32_t uid;
+            typedef uint64_t uid;
 
             virtual ~Participant();
 

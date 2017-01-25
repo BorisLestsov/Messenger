@@ -45,6 +45,7 @@ namespace meow {
             nick_name_ = other.nick_name_;
             passwd_md5_ = other.passwd_md5_;
             self_session_ = other.self_session_;
+			return *this;
         }
 
         AccountData::uid_t AccountData::get_user_id() const

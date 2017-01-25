@@ -33,7 +33,7 @@ namespace meow {
         private:
 //            const tcp::socket to_server_socket_;
             tcp::socket chatroom_socket_;
-            static const uint max_recent_msgs;
+            static const uint64_t max_recent_msgs;
 
             std::set <chat_participant_ptr> participants_;
             chat_message_queue recent_msgs_;
