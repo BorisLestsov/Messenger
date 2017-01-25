@@ -2,8 +2,8 @@
 
 #include "client_headers/ClientApp.hpp"
 #include "client_headers/ClientModel.hpp"
-#include "client_headers/ClientView.hpp"
-#include "client_headers/NcursesView.hpp"
+#include "client_headers/ClientUI.hpp"
+#include "client_headers/CursesUI.hpp"
 #include "client_headers/NetController.hpp"
 #include "lib_headers/Message.hpp"
 
@@ -22,7 +22,7 @@ namespace meow {
 		{
 			model_ = new ClientModel();
 			controller_ = new NetController(model_);
-			view_ = new NcursesView(controller_, model_);
+			view_ = new CursesUI(controller_, model_);
             //model_->add_observer(view_);
 		}
 

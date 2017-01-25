@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "client_headers/NcursesDialog.hpp"
+#include "client_headers/CursesDialog.hpp"
 #include "lib_headers/ncurses-api.hpp"
 
 namespace meow {
@@ -10,7 +10,7 @@ namespace meow {
 
         using std::string;
 
-        NcursesDialog::NcursesDialog(const string &text) {
+        CursesDialog::CursesDialog(const string &text) {
             int maxy, maxx;
             getmaxyx(stdscr, maxy, maxx);
             int w = (maxx >= 80) ? 60 : maxx - 20;
@@ -44,7 +44,7 @@ namespace meow {
             refresh();
         }
 
-        NcursesDialog::~NcursesDialog()
+        CursesDialog::~CursesDialog()
         {
 
             //init_pair(1, COLOR_WHITE, COLOR_BLACK);
@@ -54,7 +54,7 @@ namespace meow {
             delwin(self_);
         }
 
-        NcursesDialog::Answer NcursesDialog::ask_user() {
+        CursesDialog::Answer CursesDialog::ask_user() {
             Answer ans = NO;
             while (true) {
                 int c = wgetch(self_);
@@ -72,14 +72,14 @@ namespace meow {
         // private methods
 
         // fills all space inside the box with background color
-        void NcursesDialog::fill_background() {
+        void CursesDialog::fill_background() {
             for (int i = 1; i < width_-1; i++)
                 for (int j = 1; j < height_-1; j++)
                     mvwaddch(self_, j, i, ' ');
         }
 
         // smart text drawing
-        void NcursesDialog::draw_string(const std::string& text)
+        void CursesDialog::draw_string(const std::string& text)
         {
             int x0 = 3;
             int y0 = 2;
@@ -101,7 +101,7 @@ namespace meow {
             }
         }
 
-        void NcursesDialog::draw_buttons(Answer onhover)
+        void CursesDialog::draw_buttons(Answer onhover)
         {
             int button_len = 12;
             int betw_but = 10;

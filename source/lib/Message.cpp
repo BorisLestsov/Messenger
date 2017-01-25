@@ -99,6 +99,13 @@ namespace meow {
             msg_type_(MsgType::EMPTY),
             msg_body_() {}
 
+    Message::Message(MsgType t, const string &str, uid_t from, uid_t to) :
+            msg_type_(t),
+            uid_from_(from),
+            uid_to_(to),
+            sending_date_(time(nullptr)),
+            msg_body_(str) {}
+
     Message::Message(MsgType t, const string &str, uid_t from, uid_t to, send_date_t date) :
             msg_type_(t),
             uid_from_(from),
@@ -160,7 +167,7 @@ namespace meow {
         o << "Type: " << left << setw(15) << Message::msg_type_names[msg.msg_type_]
           << "From: " << left << setw(8) << msg.uid_from_
           << "To: " << left << setw(8) << msg.uid_to_
-          << "Date: " << left << setw(8) << msg.sending_date_ << endl;
+          << "Date: " << left << msg.get_date("%H:%M:%S") << endl;
         o << msg.msg_body_ << endl;
         return o;
     }
@@ -171,6 +178,16 @@ namespace meow {
 
     const string& Message::get_msg_body() const {
         return msg_body_;
+    }
+
+    Message::uid_t Message::get_to_uid() const
+    {
+        return uid_to_;
+    }
+
+    Message::uid_t Message::get_from_uid() const
+    {
+        return uid_from_;
     }
 
     string Message::get_date(string format) const
@@ -186,55 +203,3 @@ namespace meow {
 
     const char *Message::msg_type_names[] = {"EMPTY", "TEXT", "LOGIN", "LOGOUT", "CREATE_ROOM", "INVITE"};
 }
-
-
-
-/*
-const char* Message::data() const {
-    return data_;
-}
-
-char *data() {
-    return data_;
-}
-
-std::size_t length() const {
-    return header_length + body_length_;
-}
-
-const char *body() const {
-    return data_ + header_length;
-}
-
-char *body() {
-    return data_ + header_length;
-}
-
-std::size_t body_length() const {
-    return body_length_;
-}
-
-void body_length(std::size_t new_length) {
-    body_length_ = new_length;
-    if (body_length_ > max_body_length)
-        body_length_ = max_body_length;
-}
-
-bool decode_header() {
-    char header[header_length + 1] = "";
-    std::strncat(header, data_, header_length);
-    body_length_ = std::atoi(header);
-    if (body_length_ > max_body_length) {
-        body_length_ = 0;
-        return false;
-    }
-    return true;
-}
-
-void encode_header() {
-    char header[header_length + 1] = "";
-    std::sprintf(header, "%4lu", body_length_);
-    std::memcpy(data_, header, header_length);
-}
-
-*/

@@ -3,29 +3,32 @@
 
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
-#include "client_headers/NcursesChat.hpp"
-#include "client_headers/NcursesDialog.hpp"
+#include "client_headers/CursesChat.hpp"
+#include "client_headers/CursesDialog.hpp"
 
 namespace meow {
     namespace client {
 
         using std::deque;
 
-        const int NcursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
+        const int CursesChat::INPUT_HEIGHT = 3; // two borders are included: 1+3+1=5
 
-        NcursesChat::NcursesChat(NetController* net, ClientModel* model,
-                                 int height, int width, int starty, int startx)
-            :   ClientView(net, model),
+        CursesChat::CursesChat(NetController* net, ClientModel* model,
+                               Message::uid_t room_id,
+                               int height, int width, int starty, int startx)
+            :   ClientUI(net, model),
                 width_(width),
-                height_(height)
+                height_(height),
+                room_id_(room_id)
         {
-            //model_->add_observer(this);
+            model_->add_observer(this);
             self_ = newwin(height, width, startx, starty);
+            my_id_ = model_->get_user_id();
 
             // create start subwindow
             starty = height - INPUT_HEIGHT;
             startx = 0;
-            inp_win_ = new NcursesInputWindow(INPUT_HEIGHT, width, starty, startx);
+            inp_win_ = new CursesInputWindow(INPUT_HEIGHT, width, starty, startx);
 
             // create subwindow for received messages
             starty = 0;
@@ -36,38 +39,39 @@ namespace meow {
             //this->refresh();
         }
 
-        NcursesChat::~NcursesChat()
+        CursesChat::~CursesChat()
         {
+            model_->remove_observer(this);
             delete inp_win_;
             delwin(out_win_);
             delwin(self_);
         }
 
-        void NcursesChat::update()
+        void CursesChat::update()
         {
             draw_msg_list();
             inp_win_->refresh();
         }
 
-        void NcursesChat::refresh()
+        void CursesChat::refresh()
         {
             draw_msg_list();
             inp_win_->refresh();
         }
 
-        void NcursesChat::start()
+        void CursesChat::start()
         {
             int c;
             while ((c = inp_win_->input()) != ncurses::KEY_ESC) {
                 if (c == ncurses::KEY_CTRL_C) {
-                    /*NcursesDialog::Answer ans = NcursesDialog("Are you sure you want to exit?").ask_user();
-                    if (ans == NcursesDialog::YES)
+                    /*CursesDialog::Answer ans = CursesDialog("Are you sure you want to exit?").ask_user();
+                    if (ans == CursesDialog::YES)
                         return;
                     refresh();*/
                     return;
                 }
                 else if (c == '\n') {  // create Message and then send it!
-                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), 42, 69, time(nullptr));
+                    Message msg = Message(Message::MsgType::TEXT, inp_win_->get_text(), my_id_, room_id_);
                     send(msg);
                     inp_win_->reset(); // clear start text area
                 }
@@ -77,7 +81,7 @@ namespace meow {
 
         // private methods
 
-        void NcursesChat::draw_msg_list()
+        void CursesChat::draw_msg_list()
         {
             werase(out_win_);
 
@@ -93,7 +97,7 @@ namespace meow {
 
             // draw messages
             deque<Message>* dialog = model_->get_dialog();
-            const int left_width = 12;
+            const int left_width = 22;
             /*for (size_t i = 0; i < dialog->size(); i++) {
                 const char* d = dialog->at(i).get_date("%H:%M:%S").c_str();
                 mvwprintw(out_win_, i+1, 0, "%s  %s", d, dialog->at(i).get_msg_body().c_str());
@@ -101,6 +105,8 @@ namespace meow {
             int max_len_line = width_-left_width-2;
             int y = height_-4;
             for (auto i = dialog->rbegin(); i != dialog->rend() && y >= 1; i++) {
+                if (i->get_to_uid() != room_id_) // this message is from another chat
+                    continue;
                 string s = i->get_msg_body();
                 vector<string> substrs;
                 substrs.push_back("");
@@ -115,16 +121,26 @@ namespace meow {
                     substrs.back() += c;
                 }
                 // draw substrings in reverse order
+                auto txt_color = i->get_from_uid() == my_id_ ?
+                                 ncurses::ColorPair::WHITE_BLACK :
+                                 ncurses::ColorPair::YELLOW_BLACK;
+                wattron(out_win_, COLOR_PAIR(txt_color));
                 for (auto j = substrs.rbegin(); j != substrs.rend() && y >= 1; j++) {
                     mvwprintw(out_win_, y, left_width + 1, j->c_str());
                     y--;
                 }
+                wattroff(out_win_, COLOR_PAIR(txt_color));
 
-                // draw time of current output line
                 if (y >= 0) {
+                    // draw time of current output line
                     wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
                     mvwprintw(out_win_, y + 1, 1, i->get_date("%H:%M:%S").c_str());
                     wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
+                    // draw nick of sender
+                    wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
+                    const char *nick = model_->translate_uid(i->get_from_uid()).c_str();
+                    mvwprintw(out_win_, y + 1, 10, "%-.10s", nick);
+                    wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
                 }
             }
 

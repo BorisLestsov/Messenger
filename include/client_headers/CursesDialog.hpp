@@ -8,12 +8,12 @@
 namespace meow {
     namespace client {
 
-        class NcursesDialog {
+        class CursesDialog {
         public:
             enum Answer { YES, NO };
 
-            NcursesDialog(const std::string&);
-            ~NcursesDialog();
+            CursesDialog(const std::string&);
+            ~CursesDialog();
 
             Answer ask_user();
 
@@ -29,19 +29,19 @@ namespace meow {
             void fill_background();
             void draw_string(const std::string&);
             void draw_buttons(Answer onhover);
-        }; // end of class NcursesDialog
+        }; // end of class CursesDialog
 
-        inline int NcursesDialog::get_height() const
+        inline int CursesDialog::get_height() const
         {
             return height_;
         }
 
-        inline int NcursesDialog::get_width() const
+        inline int CursesDialog::get_width() const
         {
             return width_;
         }
 
-        inline void NcursesDialog::refresh()
+        inline void CursesDialog::refresh()
         {
             wrefresh(self_);
         }

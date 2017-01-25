@@ -5,6 +5,7 @@
 
 #include "Participant.hpp"
 #include "Chatroom.hpp"
+#include "server_headers/Server.hpp"
 #include "lib_headers/Message.hpp"
 
 namespace meow {
@@ -16,13 +17,15 @@ namespace meow {
 				: public Participant,
 				  public std::enable_shared_from_this<Session> {
 		public:
-			Session(tcp::socket socket, Chatroom &room);
+			Session(Server* server, Chatroom &room);
 
 			void start();
 
 			void deliver(const SerializedMessage &msg) override;
 
 		private:
+			Server* server_;
+
 			void do_read_header();
 
 			void do_read_body();
@@ -30,7 +33,7 @@ namespace meow {
 			void do_write();
 
 			tcp::socket socket_;
-			Chatroom &room_;
+			Chatroom& room_;
 			SerializedMessage msg_buf_;
 			chat_message_queue write_msgs_;
 		};

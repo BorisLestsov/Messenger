@@ -111,8 +111,30 @@ namespace meow {
 //                std::cout << endl;
                     Message msg(msg_buf_);
                     //cout << msg;
-                    model_->add_message(msg);
-
+                    if (msg.get_msg_type() == Message::MsgType::LOGIN) {
+                        // extract user_id from server's response
+                        // or set error flag and message (in the MODEL object)
+                        Message::uid_t to = msg.get_to_uid();
+                        if (to == 0) // error!
+                            model_->set_error_message(msg.get_msg_body());
+                        else
+                            model_->set_user_id(to); // server has assigned User ID to this client [user]
+					}
+                    else if (msg.get_msg_type() == Message::MsgType::UID_REQUEST) {
+                        has_last_resp_ = true;
+                        last_response_ = msg;
+                    }
+                    else if (msg.get_msg_type() == Message::MsgType::NEWROOM) {
+                        has_last_resp_ = true;
+                        last_response_ = msg;
+                    }
+                    else if (msg.get_msg_type() == Message::MsgType::ERROR) {
+                        model_->set_error_message(msg.get_msg_body());
+                    }
+                    else { // it is an ordinary message
+						model_->add_message(msg);
+					}
+					
                     do_read_header();
                 } else
                     socket_->close();
@@ -148,8 +170,22 @@ namespace meow {
         }
 
 		NetController::~NetController()
-		{
-		}
+		{}
+
+        bool NetController::has_response() const
+        {
+            return has_last_resp_;
+        }
+
+        void NetController::reset_last_response()
+        {
+            has_last_resp_ = false;
+        }
+
+        Message NetController::get_last_response()
+        {
+            return last_response_;
+        }
 
 	}
 } // namespace meow

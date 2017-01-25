@@ -26,6 +26,10 @@ namespace meow {
 			void do_read_body();
 			void do_write();
 
+            bool has_response() const;
+            void reset_last_response();
+			Message get_last_response();
+
 		private:
 			ClientModel* model_;
             
@@ -35,6 +39,9 @@ namespace meow {
 			boost::asio::io_service io_service_;
             SerializedMessage msg_buf_;
             std::deque<SerializedMessage> write_msgs_;
+
+            bool has_last_resp_;
+            Message last_response_;  // last system message from server
 		}; // class NetController
 
 	}

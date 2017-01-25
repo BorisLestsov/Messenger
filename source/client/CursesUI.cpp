@@ -4,10 +4,10 @@
 #include "lib_headers/ncurses-api.hpp"
 #include "lib_headers/Message.hpp"
 #include "client_headers/ClientModel.hpp"
-#include "client_headers/NcursesTerminal.hpp"
-#include "client_headers/ClientView.hpp"
-#include "client_headers/NcursesDialog.hpp"
-#include "client_headers/NcursesView.hpp"
+#include "client_headers/CursesTerminal.hpp"
+#include "client_headers/ClientUI.hpp"
+#include "client_headers/CursesDialog.hpp"
+#include "client_headers/CursesUI.hpp"
 #include "client_headers/NetController.hpp"
 
 namespace meow {
@@ -15,11 +15,12 @@ namespace meow {
 
         using std::deque;
 
-        NcursesView::NcursesView(NetController *netctl, ClientModel *model)
-                : ClientView(netctl, model) {
+        CursesUI::CursesUI(NetController *netctl, ClientModel *model)
+                : ClientUI(netctl, model) {
+            model_->add_observer(this);
         }
 
-        void NcursesView::start() {
+        void CursesUI::start() {
             int row, col;
 
             ncurses::initscr();                // start curses mode
@@ -35,26 +36,31 @@ namespace meow {
             ncurses::init_pair(ncurses::ColorPair::YELLOW_BLUE, COLOR_YELLOW, COLOR_BLUE);
             ncurses::init_pair(ncurses::ColorPair::RED_BLACK, COLOR_RED, COLOR_BLACK);
             ncurses::init_pair(ncurses::ColorPair::BLUE_BLACK, COLOR_BLUE, COLOR_BLACK);
+            ncurses::init_pair(ncurses::ColorPair::MAGENTA_BLACK, COLOR_MAGENTA, COLOR_BLACK);
+            ncurses::init_pair(ncurses::ColorPair::YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
+            ncurses::init_pair(ncurses::ColorPair::WHITE_BLACK, COLOR_WHITE, COLOR_BLACK);
 
             getmaxyx(stdscr, row, col);
 
-            terminal_ = new NcursesTerminal(this, row, col, 0, 0);
+            terminal_ = new CursesTerminal(this, row, col, 0, 0);
             terminal_->input();
         }
 
         // draw messages from other clients of this chat
-        void NcursesView::update() {
+        void CursesUI::update() {
+
         }
 
-        NcursesView::~NcursesView()
+        CursesUI::~CursesUI()
         {
             delete terminal_;
             ncurses::endwin();			// End curses mode
+            // remove observer -> bug!
 		}
 
         // private methods
 
-        void NcursesView::refresh()
+        void CursesUI::refresh()
         {
             ncurses::refresh();
         }

@@ -2,7 +2,7 @@
 #define _CLIENT_APP_HPP_INCLUDED
 
 #include "ClientModel.hpp"
-#include "ClientView.hpp"
+#include "ClientUI.hpp"
 #include "NetController.hpp"
 
 namespace meow {
@@ -23,7 +23,7 @@ namespace meow {
 		private:
 			NetController *controller_;
 			ClientModel *model_;
-			ClientView *view_;
+			ClientUI *view_;
 		}; // class ClientApp
 
 	}

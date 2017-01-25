@@ -56,12 +56,13 @@ namespace meow {
         static const size_t MAX_BODY_LENGTH = 512;
 
         enum MsgType {
-            EMPTY = 0, TEXT, LOGIN, LOGOUT, CREATE_ROOM, INVITE
+            EMPTY = 0, TEXT, LOGIN, LOGOUT, NEWROOM, INVITE, UID_REQUEST, ERROR
         };
         // For debug
         static const char *msg_type_names[];
 
         Message();
+        Message(MsgType, const string &, uid_t from, uid_t to);
         Message(MsgType, const string &, uid_t from, uid_t to, send_date_t);
         Message(MsgType, const char *, uid_t from, uid_t to, send_date_t);
         Message(const Message &);
@@ -78,6 +79,8 @@ namespace meow {
 
         MsgType get_msg_type() const;
         const string &get_msg_body() const;
+        uid_t get_to_uid() const;
+        uid_t get_from_uid() const;
 
         string get_date(string format) const;
 
