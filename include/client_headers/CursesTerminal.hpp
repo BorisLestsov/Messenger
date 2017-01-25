@@ -37,6 +37,9 @@ namespace meow {
             int height_;
             int pos_;    // current input position
             std::deque<output_line> out_buf_;
+            // command history
+            std::vector<std::string> hist_;
+            int hist_pos_;
 
             int exec(const std::string &);
             void do_login(const string& nick_name, const string& passwd);

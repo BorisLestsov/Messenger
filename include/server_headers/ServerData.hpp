@@ -21,10 +21,14 @@ namespace meow {
             AccountData* get_account(const std::string& nick);
             void add_account(const AccountData& new_acc);
             ChatroomData* get_room(std::vector<AccountData::uid_t>& uids);
+            ChatroomData* get_room(ChatroomData::roomid_t room_id);
+            ChatroomData* get_global_room();
+            std::map<AccountData::uid_t, AccountData*>& get_accounts_map();
 
             void load (const std::string& db_file);
             void store(const std::string& db_file);
         private:
+            ChatroomData::roomid_t global_room_id_;
             std::map<AccountData::uid_t, AccountData*> acc_data_;
             std::map<ChatroomData::roomid_t, ChatroomData*> room_data_;
         };

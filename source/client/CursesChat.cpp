@@ -21,7 +21,7 @@ namespace meow {
                 height_(height),
                 room_id_(room_id)
         {
-            //model_->add_observer(this);
+            model_->add_observer(this);
             self_ = newwin(height, width, startx, starty);
             my_id_ = model_->get_user_id();
 
@@ -41,6 +41,7 @@ namespace meow {
 
         CursesChat::~CursesChat()
         {
+            model_->remove_observer(this);
             delete inp_win_;
             delwin(out_win_);
             delwin(self_);
@@ -96,7 +97,7 @@ namespace meow {
 
             // draw messages
             deque<Message>* dialog = model_->get_dialog();
-            const int left_width = 12;
+            const int left_width = 22;
             /*for (size_t i = 0; i < dialog->size(); i++) {
                 const char* d = dialog->at(i).get_date("%H:%M:%S").c_str();
                 mvwprintw(out_win_, i+1, 0, "%s  %s", d, dialog->at(i).get_msg_body().c_str());
@@ -104,6 +105,8 @@ namespace meow {
             int max_len_line = width_-left_width-2;
             int y = height_-4;
             for (auto i = dialog->rbegin(); i != dialog->rend() && y >= 1; i++) {
+                if (i->get_to_uid() != room_id_) // this message is from another chat
+                    continue;
                 string s = i->get_msg_body();
                 vector<string> substrs;
                 substrs.push_back("");
@@ -118,16 +121,26 @@ namespace meow {
                     substrs.back() += c;
                 }
                 // draw substrings in reverse order
+                auto txt_color = i->get_from_uid() == my_id_ ?
+                                 ncurses::ColorPair::WHITE_BLACK :
+                                 ncurses::ColorPair::YELLOW_BLACK;
+                wattron(out_win_, COLOR_PAIR(txt_color));
                 for (auto j = substrs.rbegin(); j != substrs.rend() && y >= 1; j++) {
                     mvwprintw(out_win_, y, left_width + 1, j->c_str());
                     y--;
                 }
+                wattroff(out_win_, COLOR_PAIR(txt_color));
 
-                // draw time of current output line
                 if (y >= 0) {
+                    // draw time of current output line
                     wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
                     mvwprintw(out_win_, y + 1, 1, i->get_date("%H:%M:%S").c_str());
                     wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::BLUE_BLACK));
+                    // draw nick of sender
+                    wattron(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
+                    const char *nick = model_->translate_uid(i->get_from_uid()).c_str();
+                    mvwprintw(out_win_, y + 1, 10, "%-.10s", nick);
+                    wattroff(out_win_, COLOR_PAIR(ncurses::ColorPair::GREEN_BLACK));
                 }
             }
 

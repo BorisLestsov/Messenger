@@ -7,6 +7,7 @@
 #include "server_headers/Server.hpp"
 #include "lib_headers/Message.hpp"
 #include "server_headers/Session.hpp"
+#include "AccountData.hpp"
 
 namespace meow {
 	namespace server {
@@ -54,7 +55,7 @@ namespace meow {
 		}
 
 		void Session::do_read_body() {
-			auto read_body_f = [this](boost::system::error_code error_code, std::size_t /*length*/) {
+			auto read_body_f = [this] (boost::system::error_code error_code, std::size_t /*length*/) {
 				if (!error_code) {
 					Message msg(msg_buf_);
 					//cout << msg << endl;
@@ -67,33 +68,38 @@ namespace meow {
                         AccountData* acc = db->get_account(new_acc.get_user_id());
                         if (!acc) { // no user with such a nickname
                             new_acc.set_online(true);
+                            new_acc.set_session(this);
                             db->add_account(new_acc);
                             Message response(Message::MsgType::LOGIN, "Account successfully created",
                                              0, new_acc.get_user_id());
-                            cout << "create new account" << endl;
+                            //cout << "create new account" << endl;
                             this->deliver(response);
                         }
                         // account was found. check password
                         else if (!acc->check_passwd(argv[1])) {
-                            cout << "wrong password" << endl;
+                            //cout << "wrong password" << endl;
                             this->deliver(Message(Message::MsgType::LOGIN, "Wrong password", 0, 0));
                         }
                         // all is OK
                         else {
-                            cout << "successfully logged into old account" << endl;
+                            //cout << "successfully logged into old account" << endl;
                             acc->set_online(true);
+                            acc->set_session(this);
                             Message response(Message::MsgType::LOGIN,
                                              "Logged in succesfully", 0, new_acc.get_user_id());
                             this->deliver(response);
                         }
 					}
 					else if (msg.get_msg_type() == Message::MsgType::UID_REQUEST) {
+                        //cout << "request uid " << msg.get_msg_body() << endl;
 						AccountData* acc = server_->get_db()->get_account(msg.get_msg_body());
 						if (acc) {
+                            //cout << "account found, uid = " << acc->get_user_id() << endl;
                             ostringstream resp;
                             resp << acc->get_user_id();
                             Message response(Message::MsgType::UID_REQUEST,
                                              resp.str(), 0, msg.get_from_uid());
+                            //cout << response.get_msg_body() << endl;
                             this->deliver(response);
 						}
                         else {
@@ -105,6 +111,7 @@ namespace meow {
 					}
                     else if (msg.get_msg_type() == Message::MsgType::NEWROOM) {
                         // extract uids from message body
+                        //cout << msg.get_from_uid() << endl;
                         istringstream iss(msg.get_msg_body());
                         int n_users;
                         Message::uid_t id;
@@ -115,11 +122,16 @@ namespace meow {
                             uids.push_back(id);
                         }
 
-                        cout << "create new room for " << msg.get_msg_body() << endl;
+                        //cout << "create new room for " << msg.get_msg_body() << endl;
 
-                        ChatroomData* room = server_->get_db()->get_room(uids);
+                        ChatroomData* room = nullptr;
+                        //if (n_users > 0)
+                            room = server_->get_db()->get_room(uids);
+                        //else
+                        //    room = server_->get_db()->get_global_room();
+
                         if (room) {
-                            cout << "created new room with id = " << room->get_room_id() << endl;
+                            //cout << "created new room with id = " << room->get_room_id() << endl;
                             ostringstream resp;
                             resp << room->get_room_id(); // send room_id to client
                             Message response(Message::MsgType::NEWROOM,
@@ -137,11 +149,13 @@ namespace meow {
                         AccountData* acc = server_->get_db()->get_account(msg.get_from_uid());
                         if (acc) {
                             acc->set_online(false);
-                            cout << "Log out " << msg.get_from_uid() << endl;
+                            acc->set_session(nullptr);
+                            //cout << "Log out " << msg.get_from_uid() << endl;
                         }
                     }
 					else { // ordinary text
-						room_.deliver(msg);
+                        server_->deliver(msg, msg.get_to_uid());
+						//room_.deliver(msg);
 					}
 					do_read_header();
 				} else {

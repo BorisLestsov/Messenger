@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -53,7 +54,8 @@ namespace meow {
             :   parent_(parent),
                 width_(width),
                 height_(height),
-                pos_(2)
+                pos_(2),
+                hist_pos_(0)
         {
             self_ = newwin(height, width, startx, starty);
             keypad(self_, TRUE);
@@ -112,11 +114,15 @@ namespace meow {
                 int c = wgetch(self_);
                 switch (c) {
                     case '\n':  // execute command
+                        hist_.push_back(cmd);
+                        hist_pos_ = hist_.size(); // remember last command
                         retval = exec(cmd);
                         if (retval == 1) { // fatal error or exit code
                             ans = CursesDialog("Are you sure you want to exit?").ask_user();
-                            if (ans == CursesDialog::YES)
+                            if (ans == CursesDialog::YES) {
+                                do_logout();
                                 return;
+                            }
                         }
                         // draw_input_line("");
                         refresh();
@@ -126,25 +132,64 @@ namespace meow {
                         break;
                     case ncurses::KEY_BACKSP: // backspace
                         if (!cmd.empty()) {
-                            cmd.pop_back();  // C++11 required!
+                            //cmd.pop_back();  // C++11 required!
+                            cmd.erase(pos_-3, 1);
                             draw_input_line(cmd);
                             pos_--;
+                            wmove(self_, height_-1, pos_);
+                        }
+                        break;
+                    case KEY_UP:
+                        if (hist_pos_-1 >= 0) {
+                            hist_pos_--;
+                            string new_cmd = hist_[hist_pos_];
+                            draw_input_line(new_cmd);
+                            cmd = new_cmd;
+                            pos_ = new_cmd.length()+2;
+                            wmove(self_, height_-1, pos_);
+                        }
+                        break;
+                    case KEY_DOWN:
+                        if (hist_pos_+1 < hist_.size()) {
+                            hist_pos_++;
+                            string new_cmd = hist_[hist_pos_];
+                            draw_input_line(new_cmd);
+                            cmd = new_cmd;
+                            pos_ = new_cmd.length()+2;
+                        }
+                        else {
+                            draw_input_line("");
+                            cmd = "";
+                            pos_ = 2;
+                        }
+                        break;
+                    case KEY_LEFT:
+                        if (pos_ > 2) {
+                            pos_--;
+                            wmove(self_, height_-1, pos_);
+                        }
+                        break;
+                    case KEY_RIGHT:
+                        if (pos_ < cmd.length()+2) {
+                            pos_++;
+                            wmove(self_, height_-1, pos_);
                         }
                         break;
                     case ncurses::KEY_CTRL_C:
                         ans = CursesDialog("Are you sure you want to exit?").ask_user();
                         if (ans == CursesDialog::YES) {
-                            //do_logout();
+                            do_logout();
                             return;
                         }
                         refresh();
                         break;
                     default:
-                        if (pos_ >= width_)  // too many chars in start line
+                        if (pos_ >= width_)  // too many chars in the command
                             break;
                         cmd.insert(pos_-2, 1, c);
                         draw_input_line(cmd);
                         pos_++;
+                        wmove(self_, height_-1, pos_);
                         break;
                 }
             }
@@ -185,20 +230,50 @@ namespace meow {
             }
             else if (argv[0] == "chat") {
                 if (argv.size() != 2) {
-                    out_buf_.push_front(output_line("Error: wrong command! Format: chat <nickname>"));
+                    out_buf_.push_front(output_line("Error: wrong command! Format: chat [<nickname>]"));
                 }
                 else if (!parent_->get_model()->has_user_id()) {
                     out_buf_.push_front(output_line("Error: you are not logged in"));
                 }
+                    // global chat
+                /*else if (argv.size() == 1) {
+                    Message::uid_t room_id = do_newroom(vector<Message::uid_t>()); // empty vector
+                    ostringstream oss;
+                    oss << "room id global = " << room_id << endl;
+                    out_buf_.push_front(output_line(oss.str()));
+                    if (room_id) {   // here: room_id is the global chat identifier
+                        CursesChat(parent_->get_controller(), parent_->get_model(), room_id,
+                                   height_, width_, 0, 0)
+                                .start();
+                    }
+                }*/
+                    // private chat
                 else {
                     Message::uid_t to = request_uid(argv[1]);  // request server for id of required user
+                    /*ostringstream os;
+                    os << argv[1] << " id = " << to << endl;
+                    out_buf_.push_front(output_line(os.str()));*/
                     if (to) {
+                        //out_buf_.push_front(output_line(argv[1]));
+
                         vector<Message::uid_t> usrlist;
+
                         usrlist.push_back(parent_->get_model()->get_user_id());
                         usrlist.push_back(to);
+
+                        /*ostringstream oss;
+                        oss << usrlist[0] << endl;
+                        oss << usrlist[1] << endl;
+                        out_buf_.push_front(output_line(oss.str()));*/
+
                         Message::uid_t room_id = do_newroom(usrlist);
+                        /*out_buf_.push_front(output_line("after do_newroom"));
+
+                        ostringstream os;
+                        os << "room id = " << room_id << endl;
+                        out_buf_.push_front(output_line(os.str()));*/
                         if (room_id) {
-                            CursesChat(parent_->get_controller(), parent_->get_model(), to,
+                            CursesChat(parent_->get_controller(), parent_->get_model(), room_id,
                                        height_, width_, 0, 0)
                                     .start();
                         }
@@ -225,7 +300,6 @@ namespace meow {
                     out_buf_.push_front(output_line("Error: you are not logged in"));
             }
             else if (cmd == "quit" || cmd == "exit") {
-                do_logout();
                 return 1;
             }
             else {   // error
@@ -244,7 +318,7 @@ namespace meow {
             Message login_msg(Message::MsgType::LOGIN, body, my_id, 0, time(nullptr));
             parent_->get_controller()->send(login_msg);
 
-            out_buf_.push_front(output_line("Login query for nickname \'" + login_msg.get_msg_body() + "\'..."));
+            out_buf_.push_front(output_line("Login query for nickname \'" + nick_name + "\'..."));
             refresh();
 
             // wait for server's responce, but no more than 10 sec
@@ -272,9 +346,10 @@ namespace meow {
             }
             else {
                 ostringstream msg;
-                msg << "User data are received.\n";
                 msg << "Login  : " + nick_name << "\n";
+                msg << "Passwd : " << passwd.c_str() << "\n";
                 msg << "User id: " << model->get_user_id();
+                model->add_uid_nick_pair(model->get_user_id(), nick_name);
                 out_buf_.push_front(output_line(msg.str()));
             }
         }
@@ -282,7 +357,12 @@ namespace meow {
         void CursesTerminal::do_logout()
         {
             ClientModel* model = parent_->get_model();
-            parent_->get_controller()->send(Message(Message::MsgType::LOGOUT, "", model->get_user_id(), 0));
+            auto my_id = model->get_user_id();
+            if (my_id == 0)
+                return; // КОСТЫЛИЩЕ!
+            Message logout_msg(Message::MsgType::LOGOUT, "", my_id, 0);
+            auto netctl = parent_->get_controller();
+            netctl->send(logout_msg);
             model->set_user_id(0);
         }
 
@@ -319,13 +399,15 @@ namespace meow {
             }
             else {
                 string resp = net->get_last_response().get_msg_body();
+                std::ofstream f("out.txt");
+                f << resp << endl;
                 net->reset_last_response();
                 istringstream iss(resp);
                 Message::uid_t id;
                 iss >> id;
-                ostringstream msg;
-                msg << "user id: " << id;
-                out_buf_.push_front(output_line(msg.str()));
+                model->add_uid_nick_pair(id, nick);
+                f << id << endl;
+                f.close();
                 return id;
             }
             return 0;
@@ -374,9 +456,6 @@ namespace meow {
                 istringstream iss(resp);
                 Message::uid_t id;
                 iss >> id;
-                ostringstream msg;
-                msg << "room id: " << id;
-                out_buf_.push_front(output_line(msg.str()));
                 return id;
             }
             return 0;

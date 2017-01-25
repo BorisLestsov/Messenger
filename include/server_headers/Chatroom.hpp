@@ -6,6 +6,7 @@
 
 #include "configs.h"
 #include "Participant.hpp"
+#include "ChatroomData.hpp"
 #include "lib_headers/Message.hpp"
 
 namespace meow {
@@ -15,7 +16,7 @@ namespace meow {
 
         class Chatroom {
         public:
-            typedef uint32_t room_id;
+            typedef ChatroomData::roomid_t room_id;
 
             Chatroom(boost::asio::io_service &io_service);
 

@@ -45,7 +45,10 @@ namespace ncurses {
         WHITE_BLUE,
         YELLOW_BLUE,
         RED_BLACK,
-        BLUE_BLACK
+        BLUE_BLACK,
+        MAGENTA_BLACK,
+        YELLOW_BLACK,
+        WHITE_BLACK
     };
 }
 

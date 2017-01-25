@@ -18,7 +18,11 @@ namespace meow {
 
         ServerDatabase::ServerDatabase()
         {
-
+            // on start only GLOBAL room is available
+            /*std::vector<AccountData::uid_t> empty;
+            ChatroomData* global = new ChatroomData(empty);
+            global_room_id_ = global->get_room_id();
+            room_data_[global_room_id_] = global;*/
         }
 
         ServerDatabase::~ServerDatabase()
@@ -73,6 +77,21 @@ namespace meow {
             return new_room;
         }
 
+        ChatroomData* ServerDatabase::get_global_room()
+        {
+            return room_data_[global_room_id_];
+        }
+
+        std::map<AccountData::uid_t, AccountData*>& ServerDatabase::get_accounts_map()
+        {
+            return acc_data_;
+        }
+
+        ChatroomData* ServerDatabase::get_room(ChatroomData::roomid_t room_id)
+        {
+            return room_data_[room_id];
+        }
+
         void ServerDatabase::load(const string& db_file)
         {
             ifstream dbfile(db_file);
@@ -89,7 +108,7 @@ namespace meow {
                 dbfile >> id >> nick >> md5s;
                 add_account(AccountData(nick, md5s));
             }
-            cout << "users loaded; len = " << acc_data_.size() << endl;
+            //cout << "users loaded; len = " << acc_data_.size() << endl;
             dbfile.close();
         }
 

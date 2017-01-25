@@ -28,6 +28,7 @@ namespace meow {
             void list_room() const;
 
             ServerDatabase* get_db();
+            void deliver(const SerializedMessage& msg, Message::uid_t to);
 
         private:
             void do_accept();
@@ -40,7 +41,7 @@ namespace meow {
             ServerDatabase* db_;
 
             // for many chatrooms
-            std::map<Chatroom::room_id, Chatroom> rooms_map_;
+            //std::map<Chatroom::room_id, Chatroom> rooms_map_;
             std::map<Participant::uid, chat_participant_ptr> users_map_;
         };
     }

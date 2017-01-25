@@ -29,8 +29,43 @@ namespace meow {
             return db_;
         }
 
+        void Server::deliver(const SerializedMessage& msg, Message::uid_t to)
+        {
+            ChatroomData* data = db_->get_room(to);
+
+            /*
+            // if global
+            // terrible code
+            if (data == db_->get_global_room()) {
+                auto& full_map = db_->get_accounts_map();
+                for (auto p = full_map.begin(); p != full_map.end(); p++) {
+                    AccountData *acc = p->second;
+                    Session *s = acc->get_session();
+                    if (s) {
+                        s->deliver(msg);
+                    } else { // user is not online, store messages for him
+                        acc->store_msg(msg);
+                    }
+                }
+            }
+            else {*/
+                // if private
+                auto &receivers = data->get_user_list();
+                for (auto i = 0; i < receivers.size(); i++) {
+                    auto uid = receivers[i];
+                    AccountData *acc = db_->get_account(uid);
+                    Session *s = acc->get_session();
+                    if (s) {
+                        s->deliver(msg);
+                    } else { // user is not online, store messages for him
+                        acc->store_msg(msg);
+                    }
+                }
+            //}
+        }
+
         void Server::do_accept() {
-            auto acceptor_f = [this](boost::system::error_code error_code) {
+            auto acceptor_f = [this] (boost::system::error_code error_code) {
                 if (!error_code)
                     std::make_shared<Session>(this, rooms_.back())->start();
                 else

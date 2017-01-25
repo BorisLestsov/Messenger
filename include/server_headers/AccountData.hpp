@@ -5,9 +5,15 @@
 #include <string>
 
 #include <openssl/md5.h>
+#include <vector>
+
+#include "Message.hpp"
+//#include "Session.hpp"
 
 namespace meow {
     namespace server {
+
+        class Session;
 
         class AccountData {
         public:
@@ -30,12 +36,20 @@ namespace meow {
             bool is_online() const;
             void set_online(bool online);
 
+            void set_session(Session*);
+            Session* get_session();
+
+            void store_msg(const SerializedMessage&);
+            std::vector<SerializedMessage>& get_stored_msgs();
+
             static std::string str_to_md5(const std::string& s);
         private:
             uid_t user_id_;
             std::string nick_name_;
             std::string passwd_md5_;
             bool online_;
+            Session* self_session_;
+            std::vector<SerializedMessage> msg_store_;
         };
     } // namespace server
 } // namespace meow

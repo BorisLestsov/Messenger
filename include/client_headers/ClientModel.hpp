@@ -3,6 +3,7 @@
 
 #include <list>
 #include <deque>
+#include <map>
 
 #include "Observer.hpp"
 #include "lib_headers/Message.hpp"
@@ -18,6 +19,7 @@ namespace meow {
             ~ClientModel();
 			
 			void add_observer(Observer*);
+			void remove_observer(Observer*);
             void add_message(const Message&);
             std::deque<Message>* get_dialog();
 
@@ -38,6 +40,9 @@ namespace meow {
             bool received_response() const;
             void set_received_response(bool received);
 
+			std::string translate_uid(Message::uid_t id) const;
+            void add_uid_nick_pair(Message::uid_t id, const std::string& nick);
+
         private:
             std::deque<Message> dialog_;
 			std::list<Observer*> observers_;
@@ -51,6 +56,8 @@ namespace meow {
             std::string err_message_;
 
             bool response_;
+
+            std::map<Message::uid_t, std::string> nick_map_;
 
 			void notify_all();
 		}; // class ClientModel

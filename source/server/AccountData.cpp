@@ -6,6 +6,8 @@
 
 #include <openssl/md5.h>
 
+#include "Session.hpp"
+
 namespace meow {
     namespace server {
 
@@ -18,7 +20,7 @@ namespace meow {
         }*/
 
         AccountData::AccountData(const string& nick, const string& passwd_md5)
-            :   nick_name_(nick), passwd_md5_(passwd_md5), online_(false)
+            :   nick_name_(nick), passwd_md5_(passwd_md5), online_(false), self_session_(nullptr)
         {
             std::hash<string> hash_fun;
             user_id_ = hash_fun(nick);
@@ -30,6 +32,7 @@ namespace meow {
             nick_name_ = other.nick_name_;
             passwd_md5_ = other.passwd_md5_;
             online_ = other.online_;
+            self_session_ = other.self_session_;
         }
 
         AccountData::~AccountData()
@@ -41,6 +44,7 @@ namespace meow {
             user_id_ = other.user_id_;
             nick_name_ = other.nick_name_;
             passwd_md5_ = other.passwd_md5_;
+            self_session_ = other.self_session_;
         }
 
         AccountData::uid_t AccountData::get_user_id() const
@@ -81,6 +85,30 @@ namespace meow {
         void AccountData::set_online(bool online)
         {
             online_ = online;
+        }
+
+        void AccountData::set_session(Session* s)
+        {
+            self_session_ = s;
+
+            for (auto& m : msg_store_)
+                s->deliver(m);
+            msg_store_.clear();
+        }
+
+        Session* AccountData::get_session()
+        {
+            return self_session_;
+        }
+
+        void AccountData::store_msg(const SerializedMessage& m)
+        {
+            msg_store_.push_back(m);
+        }
+
+        std::vector<SerializedMessage>& AccountData::get_stored_msgs()
+        {
+            return msg_store_;
         }
 
         // transform string to its MD5 representation

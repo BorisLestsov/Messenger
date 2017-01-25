@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 
 #include "client_headers/ClientModel.hpp"
@@ -21,6 +22,11 @@ namespace meow {
 		{
 			observers_.push_front(observer);
 		}
+
+        void ClientModel::remove_observer(Observer* observer)
+        {
+            observers_.remove(observer);
+        }
 
 		void ClientModel::add_message(const Message& msg)
         {
@@ -97,6 +103,19 @@ namespace meow {
         void ClientModel::set_received_response(bool received)
         {
             response_ = received;
+        }
+
+        std::string ClientModel::translate_uid(Message::uid_t id) const
+        {
+            auto p = nick_map_.find(id);
+            if (p != nick_map_.end())
+                return p->second;
+            return "<?>";
+        }
+
+        void ClientModel::add_uid_nick_pair(Message::uid_t id, const std::string& nick)
+        {
+            nick_map_[id] = nick;
         }
         
         // private

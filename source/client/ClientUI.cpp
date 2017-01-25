@@ -3,13 +3,17 @@
 #include "client_headers/NetController.hpp"
 #include "lib_headers/Message.hpp"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace meow {
 	namespace client {
 
 		ClientUI::ClientUI(NetController *controller, ClientModel *model)
 				: controller_(controller), model_(model)
 		{
-            model_->add_observer(this);
+
 		}
 
 		void ClientUI::send(const Message& msg)
@@ -19,6 +23,7 @@ namespace meow {
 
 		ClientUI::~ClientUI()
 		{
+
 		}
 
 	}
