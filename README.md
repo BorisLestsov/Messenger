@@ -2,19 +2,19 @@
 
 ### dependencies:
 
-CMake
-boost::asio
-ncurses
-OpenSSL
+- CMake
+- boost::asio
+- ncurses
+- OpenSSL
 
 ### How to build:
 
-mkdir build
-cd build
-cmake ..
-make
+- mkdir build
+- cd build
+- cmake ..
+- make
 
 ### How to run:
 
-./Server <port>
-./Client <server-ip> <server-port>
+- ./Server <port>
+- ./Client <server-ip> <server-port>
