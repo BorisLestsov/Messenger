@@ -1,4 +1,6 @@
 # Console Messenger "Meow"
+Lightweight pseudographical messenger for UNIX-like systems.
+
 
 ### dependencies:
 
